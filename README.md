@@ -1,40 +1,40 @@
-# Land CS タスクアラート
+# Land CS タスクアラートシステム
 
-Backlog APIからタスク情報を取得し、毎朝8時（JST）にSlackへ自動投稿するスクリプトです。
+毎朝8:00（JST）にBacklogのタスク状況をSlackへ自動投稿するシステムです。
 
-## ファイル構成
+## 📁 ファイル構成
 
 ```
 .
-├── task_alert.py                # メインスクリプト
-├── requirements.txt             # 依存ライブラリ
-├── .github/
-│   └── workflows/
-│       └── task_alert.yml       # GitHub Actions設定
-└── README.md
+├── task_alert.py                    # メインスクリプト
+├── requirements.txt                 # 依存ライブラリ（標準ライブラリのみ）
+├── README.md                        # このファイル
+└── .github/
+    └── workflows/
+        └── task_alert.yml           # GitHub Actions設定
 ```
 
-## セットアップ手順
+## ⚙️ GitHub Secrets 設定
 
-### 1. リポジトリをPrivateで作成
+リポジトリの Settings → Secrets and variables → Actions に以下を登録：
 
-### 2. GitHub Secretsを登録
-Settings → Secrets and variables → Actions → New repository secret
+| Secret名           | 内容                        |
+|--------------------|-----------------------------|
+| BACKLOG_API_KEY    | BacklogのAPIキー             |
+| SLACK_WEBHOOK_URL  | SlackのIncoming Webhook URL |
 
-| Secret名 | 内容 |
-|----------|------|
-| `BACKLOG_API_KEY` | BacklogのAPIキー |
-| `SLACK_WEBHOOK_URL` | SlackのIncoming Webhook URL |
+## 🚀 実行スケジュール
 
-### 3. 動作確認（手動実行）
-Actions タブ → 「Land CS タスクアラート（毎朝8時）」→「Run workflow」
+- **自動実行**: 毎朝8:00 JST（月〜金）
+- **手動実行**: GitHub Actions → Run workflow
 
-### 4. 自動実行
-毎朝8時（JST）に自動でSlack投稿されます。
+## 📊 ダッシュボード
 
-## 引き継ぎ・メンテナンス
-- APIキー・Webhook URLはBacklog Wikiにも記録しておくこと
-- チームメンバーをCollaboratorとして追加推奨（Settings → Collaborators）
+詳細ダッシュボード：
+https://wxhub.wni.co.jp/api/sites/501a2f01-9abe-4574-b32a-7803ecf67855/app-a928bf65-mog22est/index.html
 
-## 作成者
-鵜飼 啓之（ukai@wni.com）
+## 👥 チームメンバーへの共有
+
+このリポジトリをCollaboratorとして追加し、以下を共有してください：
+- BACKLOG_API_KEY
+- SLACK_WEBHOOK_URL

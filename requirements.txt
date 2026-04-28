@@ -1,1 +1,3 @@
-requests
+# task_alert.py の依存ライブラリ
+# 標準ライブラリのみ使用のため追加パッケージなし
+# （urllib, json, os, datetime はPython標準）
