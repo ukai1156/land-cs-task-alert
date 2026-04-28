@@ -6,17 +6,18 @@ Backlog APIからタスク情報を取得し、毎朝8時（JST）にSlackへ自
 
 ```
 .
-├── task_alert.py
-├── requirements.txt
+├── task_alert.py                # メインスクリプト
+├── requirements.txt             # 依存ライブラリ
 ├── .github/
 │   └── workflows/
-│       └── task_alert.yml
+│       └── task_alert.yml       # GitHub Actions設定
 └── README.md
 ```
 
 ## セットアップ手順
 
 ### 1. リポジトリをPrivateで作成
+
 ### 2. GitHub Secretsを登録
 Settings → Secrets and variables → Actions → New repository secret
 
@@ -26,12 +27,12 @@ Settings → Secrets and variables → Actions → New repository secret
 | `SLACK_WEBHOOK_URL` | SlackのIncoming Webhook URL |
 
 ### 3. 動作確認（手動実行）
-Actions タブ → 「Land CS タスクアラート」→「Run workflow」
+Actions タブ → 「Land CS タスクアラート（毎朝8時）」→「Run workflow」
 
 ### 4. 自動実行
 毎朝8時（JST）に自動でSlack投稿されます。
 
-## 引き継ぎ
+## 引き継ぎ・メンテナンス
 - APIキー・Webhook URLはBacklog Wikiにも記録しておくこと
 - チームメンバーをCollaboratorとして追加推奨（Settings → Collaborators）
 

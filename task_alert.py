@@ -2,12 +2,15 @@ import os
 import requests
 from datetime import datetime, timedelta, timezone
 
+# ─── 設定 ───────────────────────────────────────────────────
 BACKLOG_SPACE   = "wni"
 BACKLOG_PROJECT = "BRAND_ENTRY"
 BACKLOG_API_KEY = os.environ["BACKLOG_API_KEY"]
 SLACK_WEBHOOK   = os.environ["SLACK_WEBHOOK_URL"]
+DASHBOARD_URL   = "https://wxhub.wni.co.jp/artifacts/a928bf65-e09c-4644-a4ea-854d78bb0bd9"
 JST = timezone(timedelta(hours=9))
 
+# ─── Backlog API ─────────────────────────────────────────────
 def get_project_id():
     url = f"https://{BACKLOG_SPACE}.backlog.jp/api/v2/projects/{BACKLOG_PROJECT}"
     res = requests.get(url, params={"apiKey": BACKLOG_API_KEY})
@@ -26,6 +29,7 @@ def fetch_issues():
     res.raise_for_status()
     return res.json()
 
+# ─── タスク集計 ──────────────────────────────────────────────
 def classify_issues(issues):
     today    = datetime.now(JST).date()
     tomorrow = today + timedelta(days=1)
@@ -56,10 +60,13 @@ def classify_issues(issues):
 
     return members, overdue_count
 
+# ─── Slack Block Kit 生成 ────────────────────────────────────
 def build_slack_blocks(members, overdue_count):
-    today_str = datetime.now(JST).strftime("%Y年%m月%d日（%a）")
-    red, yellow, green = [], [], []
+    today_str    = datetime.now(JST).strftime("%Y/%m/%d")
+    total_issues = sum(d["total"] for d in members.values())
+    total_overdue = sum(d["overdue"] for d in members.values())
 
+    red, yellow, green = [], [], []
     for name, d in sorted(members.items()):
         urgent = d["overdue"] + d["today"]
         if d["overdue"] > 0 or urgent >= 3:
@@ -71,39 +78,64 @@ def build_slack_blocks(members, overdue_count):
 
     def member_line(name, d):
         parts = []
-        if d["overdue"] > 0: parts.append(f"期限切れ {d['overdue']}件")
-        if d["today"]   > 0: parts.append(f"今日 {d['today']}件")
-        if d["tomorrow"]> 0: parts.append(f"明日 {d['tomorrow']}件")
-        if d["in5"]     > 0: parts.append(f"5日以内 {d['in5']}件")
-        detail = "　".join(parts) if parts else "期限迫りなし"
-        return f"• {name}：{detail}"
+        if d["overdue"] > 0: parts.append(f"期限切れ:{d['overdue']}件")
+        if d["today"]   > 0: parts.append(f"今日:{d['today']}件")
+        if d["tomorrow"]> 0: parts.append(f"明日:{d['tomorrow']}件")
+        if d["in5"]     > 0: parts.append(f"5日以内:{d['in5']}件")
+        detail = " / ".join(parts) if parts else "期限迫りなし"
+        return f"• {name}　{detail}"
+
+    def member_line_green(name):
+        return f"• {name}"
 
     blocks = [
-        {"type": "header", "text": {"type": "plain_text", "text": f"📋 Land CS タスク状況レポート　{today_str}"}},
+        # タイトル
+        {"type": "header", "text": {"type": "plain_text", "text": "⚠️ 今日・5日以内の〆切タスク確認"}},
+        # 日付・チーム（2列）
+        {"type": "section", "fields": [
+            {"type": "mrkdwn", "text": f"📅 *{today_str} 朝*"},
+            {"type": "mrkdwn", "text": "👥 *Land CS チーム*"}
+        ]},
         {"type": "divider"},
+        # サマリー
         {"type": "section", "text": {"type": "mrkdwn",
-            "text": f"*サマリー*\n期限切れ：*{overdue_count}件* ／ 担当者数：*{len(members)}名*"}},
+            "text": f"*サマリー*\n期限切れ：*{total_overdue}件* ／ 担当者数：*{len(members)}名*"}},
         {"type": "divider"},
     ]
+
     if red:
         blocks.append({"type": "section", "text": {"type": "mrkdwn",
-            "text": "*🚨 要対応*\n" + "\n".join(member_line(n, d) for n, d in red)}})
+            "text": f"🔴 *緊急（{len(red)}名）*\n" + "\n".join(member_line(n, d) for n, d in red)}})
+
     if yellow:
         blocks.append({"type": "section", "text": {"type": "mrkdwn",
-            "text": "*🟡 注意*\n" + "\n".join(member_line(n, d) for n, d in yellow)}})
+            "text": f"🟡 *注意（{len(yellow)}名）*\n" + "\n".join(member_line(n, d) for n, d in yellow)}})
+
     if green:
         blocks.append({"type": "section", "text": {"type": "mrkdwn",
-            "text": "*🟢 順調*\n" + "\n".join(member_line(n, d) for n, d in green)}})
+            "text": f"🟢 *順調（{len(green)}名）*\n" + "\n".join(member_line_green(n) for n, d in green)}})
+
     blocks.append({"type": "divider"})
     blocks.append({"type": "context", "elements": [
-        {"type": "mrkdwn", "text": "🔗 詳細はダッシュボードで確認できます"}]})
+        {"type": "mrkdwn",
+         "text": f"📊 集計対象: {total_issues}件　｜　🔴{len(red)}名　🟡{len(yellow)}名　🟢{len(green)}名"}
+    ]})
+    blocks.append({"type": "actions", "elements": [
+        {"type": "button",
+         "text": {"type": "plain_text", "text": "📋 詳細ダッシュボードを見る"},
+         "style": "primary",
+         "url": DASHBOARD_URL}
+    ]})
+
     return blocks
 
+# ─── Slack 投稿 ──────────────────────────────────────────────
 def post_to_slack(blocks):
     res = requests.post(SLACK_WEBHOOK, json={"blocks": blocks})
     res.raise_for_status()
     print("✅ Slack投稿成功")
 
+# ─── メイン ──────────────────────────────────────────────────
 def main():
     print("Backlog APIからデータ取得中...")
     issues = fetch_issues()
