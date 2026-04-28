@@ -1,0 +1,28 @@
+name: Land CS タスクアラート（毎朝8時）
+
+on:
+  schedule:
+    - cron: "0 23 * * *"   # 毎日 23:00 UTC = 翌08:00 JST
+  workflow_dispatch:         # 手動実行ボタンも有効化
+
+jobs:
+  run-alert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 をセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 依存ライブラリをインストール
+        run: pip install -r requirements.txt
+
+      - name: タスクアラートを実行
+        env:
+          BACKLOG_API_KEY: ${{ secrets.BACKLOG_API_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python task_alert.py
