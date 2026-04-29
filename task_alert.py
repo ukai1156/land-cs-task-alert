@@ -223,12 +223,14 @@ def build_slack_blocks(alert_members, all_members):
         }
     })
 
-    # ── フッター：ダッシュボードリンク（section形式 ※Webhookでも動作）──
+    # ── フッター：ダッシュボードリンク ──
+    # ✅ 修正：URLを直接記載（Slackが自動リンク化）
+    # ✅ unfurl_links=True を payload に追加してリンクを有効化
     blocks.append({
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": f"📊 詳細ダッシュボードを見る\n<{DASHBOARD_URL}|👉 ダッシュボードを開く>"
+            "text": f"📊 *詳細ダッシュボード*\n{DASHBOARD_URL}"
         }
     })
 
@@ -237,7 +239,11 @@ def build_slack_blocks(alert_members, all_members):
 # ─── Slack 投稿 ───────────────────────────────────────────────────────────────
 
 def post_to_slack(blocks):
-    payload = json.dumps({"blocks": blocks}).encode("utf-8")
+    payload = json.dumps({
+        "blocks": blocks,
+        "unfurl_links": True,   # ✅ リンクの自動展開を有効化
+        "unfurl_media": False
+    }).encode("utf-8")
     req = urllib.request.Request(
         SLACK_WEBHOOK_URL,
         data=payload,
