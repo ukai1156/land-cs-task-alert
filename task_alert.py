@@ -489,30 +489,27 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
 # ─────────────────────────────────────────
 
 def take_screenshot(html_content: str, output_path: str) -> None:
-    """HTMLをスクリーンショットとして保存"""
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".html", delete=False, encoding="utf-8") as f:
+    """Python Playwright APIでHTMLをスクリーンショットとして保存"""
+    from playwright.sync_api import sync_playwright
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".html", delete=False, encoding="utf-8"
+    ) as f:
         f.write(html_content)
         tmp_html = f.name
 
-    script = f"""
-const {{ chromium }} = require('playwright');
-(async () => {{
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  await page.goto('file://{tmp_html}');
-  await page.setViewportSize({{ width: 860, height: 100 }});
-  await page.waitForTimeout(500);
-  const h = await page.evaluate(() => document.body.scrollHeight);
-  await page.setViewportSize({{ width: 860, height: h }});
-  await page.screenshot({{ path: '{output_path}', fullPage: true }});
-  await browser.close();
-}})();
-"""
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".js", delete=False) as js_f:
-        js_f.write(script)
-        js_path = js_f.name
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page()
+        page.goto(f"file://{tmp_html}")
+        page.set_viewport_size({"width": 860, "height": 100})
+        page.wait_for_timeout(500)
+        body_height = page.evaluate("document.body.scrollHeight")
+        page.set_viewport_size({"width": 860, "height": body_height})
+        page.screenshot(path=output_path, full_page=True)
+        browser.close()
 
-    subprocess.run(["node", js_path], check=True)
+    os.unlink(tmp_html)
 
 # ─────────────────────────────────────────
 # Slack Files API 投稿
