@@ -21,10 +21,7 @@ BACKLOG_BASE_URL  = "https://wni.backlog.jp"
 PROJECT_KEY       = "BRAND_ENTRY"
 DASHBOARD_URL     = "https://wxhub.wni.co.jp/api/sites/501a2f01-9abe-4574-b32a-7803ecf67855/app-a928bf65-mog22est/index.html"
 
-# 対象ステータスID（未対応・処理中・処理済み）
 TARGET_STATUS_IDS = [1, 2, 3]
-
-# 〆切アラート対象日数
 ALERT_DAYS = 5
 
 # ─── 日付ユーティリティ ───────────────────────────────────────────────────────
@@ -54,7 +51,6 @@ def due_label(days):
 # ─── Backlog API ──────────────────────────────────────────────────────────────
 
 def backlog_get(path, params=None):
-    """Backlog APIへGETリクエスト"""
     base = f"{BACKLOG_BASE_URL}/api/v2{path}"
     p = {"apiKey": BACKLOG_API_KEY}
     if params:
@@ -64,16 +60,13 @@ def backlog_get(path, params=None):
         return json.loads(res.read().decode())
 
 def get_project_id():
-    """プロジェクトキーからIDを取得"""
     data = backlog_get(f"/projects/{PROJECT_KEY}")
     return data["id"]
 
 def get_members(project_id):
-    """プロジェクトメンバー一覧を取得"""
     return backlog_get(f"/projects/{project_id}/users")
 
 def get_issues(project_id, assignee_id):
-    """担当者のオープンタスクを取得"""
     params = {
         "projectId[]": project_id,
         "assigneeId[]": assignee_id,
@@ -85,13 +78,7 @@ def get_issues(project_id, assignee_id):
 # ─── タスク分析 ───────────────────────────────────────────────────────────────
 
 def analyze_member_tasks(members, project_id):
-    """
-    各メンバーのタスクを分析し、アラート対象のみ返す
-    Returns: list of dict {name, overdue, today, within5, tasks}
-    """
-    today = get_today_jst()
     results = []
-
     for member in members:
         issues = get_issues(project_id, member["id"])
         overdue_tasks = []
@@ -102,14 +89,14 @@ def analyze_member_tasks(members, project_id):
             due_str = issue.get("dueDate")
             if not due_str:
                 continue
-            due = parse_due_date(due_str)
+            due  = parse_due_date(due_str)
             days = days_from_today(due)
 
             task_info = {
-                "name": issue["summary"],
-                "days": days,
+                "name":  issue["summary"],
+                "days":  days,
                 "label": due_label(days),
-                "url": f"{BACKLOG_BASE_URL}/view/{issue['issueKey']}",
+                "url":   f"{BACKLOG_BASE_URL}/view/{issue['issueKey']}",
             }
 
             if days < 0:
@@ -119,12 +106,11 @@ def analyze_member_tasks(members, project_id):
             elif days <= ALERT_DAYS:
                 within5_tasks.append(task_info)
 
-        # アラート対象タスクがある場合のみ追加
         if overdue_tasks or today_tasks or within5_tasks:
             results.append({
-                "name": member["name"],
+                "name":    member["name"],
                 "overdue": overdue_tasks,
-                "today": today_tasks,
+                "today":   today_tasks,
                 "within5": within5_tasks,
             })
 
@@ -133,7 +119,6 @@ def analyze_member_tasks(members, project_id):
 # ─── シグナル判定 ─────────────────────────────────────────────────────────────
 
 def get_signal(member_data):
-    """🔴🟡🟢 シグナルを返す"""
     if member_data["overdue"] or member_data["today"]:
         return "red"
     if len(member_data["within5"]) >= 3:
@@ -143,19 +128,17 @@ def get_signal(member_data):
 # ─── Slack Block Kit 生成 ─────────────────────────────────────────────────────
 
 def build_slack_blocks(alert_members, all_members):
-    """Slack Block Kit ブロックを生成"""
     today_jst = datetime.now(JST)
     date_str  = today_jst.strftime("%Y/%m/%d（%a）")
 
-    # シグナル別に分類
     red_members    = [m for m in alert_members if get_signal(m) == "red"]
     yellow_members = [m for m in alert_members if get_signal(m) == "yellow"]
-    # 順調メンバー：アラート対象外のメンバー
     alert_names    = {m["name"] for m in alert_members}
     green_members  = [m for m in all_members if m["name"] not in alert_names]
 
-    # サマリー集計
-    total_overdue = sum(len(m["overdue"]) for m in alert_members)
+    total_overdue   = sum(len(m["overdue"]) for m in alert_members)
+    total_today     = sum(len(m["today"])   for m in alert_members)
+    total_within5   = sum(len(m["within5"]) for m in alert_members)
     total_assignees = len(alert_members)
 
     blocks = []
@@ -163,11 +146,7 @@ def build_slack_blocks(alert_members, all_members):
     # ── ヘッダー ──
     blocks.append({
         "type": "header",
-        "text": {
-            "type": "plain_text",
-            "text": "⚠️ 今日・5日以内の〆切タスク確認",
-            "emoji": True
-        }
+        "text": {"type": "plain_text", "text": "⚠️ 今日・5日以内の〆切タスク確認", "emoji": True}
     })
 
     # ── 日付・チーム名 ──
@@ -194,60 +173,43 @@ def build_slack_blocks(alert_members, all_members):
     if red_members:
         blocks.append({
             "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": f"🔴 *緊急（{len(red_members)}名）*"
-            }
+            "text": {"type": "mrkdwn", "text": f"🔴 *緊急（{len(red_members)}名）*"}
         })
         for m in red_members:
             overdue_count = len(m["overdue"])
             within5_count = len(m["today"]) + len(m["within5"])
-            detail = f"期限切れ:{overdue_count}件 / 5日以内:{within5_count}件"
             blocks.append({
                 "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"　• *{m['name']}*　{detail}"
-                }
+                "text": {"type": "mrkdwn",
+                         "text": f"　• *{m['name']}*　期限切れ:{overdue_count}件 / 5日以内:{within5_count}件"}
             })
 
     # ── 🟡 注意セクション ──
     if yellow_members:
         blocks.append({
             "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": f"🟡 *注意（{len(yellow_members)}名）*"
-            }
+            "text": {"type": "mrkdwn", "text": f"🟡 *注意（{len(yellow_members)}名）*"}
         })
         for m in yellow_members:
             overdue_count = len(m["overdue"])
             within5_count = len(m["today"]) + len(m["within5"])
-            detail = f"期限切れ:{overdue_count}件 / 5日以内:{within5_count}件"
             blocks.append({
                 "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"　• *{m['name']}*　{detail}"
-                }
+                "text": {"type": "mrkdwn",
+                         "text": f"　• *{m['name']}*　期限切れ:{overdue_count}件 / 5日以内:{within5_count}件"}
             })
 
-    # ── 🟢 順調セクション ──
+    # ── 🟢 順調セクション（名前のみ）──
     if green_members:
         green_names = "　" + "　".join([f"• {m['name']}" for m in green_members])
         blocks.append({
             "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": f"🟢 *順調（{len(green_members)}名）*\n{green_names}"
-            }
+            "text": {"type": "mrkdwn", "text": f"🟢 *順調（{len(green_members)}名）*\n{green_names}"}
         })
 
     blocks.append({"type": "divider"})
 
     # ── フッター：集計サマリー ──
-    total_today   = sum(len(m["today"])   for m in alert_members)
-    total_within5 = sum(len(m["within5"]) for m in alert_members)
     blocks.append({
         "type": "section",
         "text": {
@@ -261,21 +223,13 @@ def build_slack_blocks(alert_members, all_members):
         }
     })
 
-    # ── フッター：ダッシュボードリンク ──
+    # ── フッター：ダッシュボードリンク（section形式 ※Webhookでも動作）──
     blocks.append({
-        "type": "actions",
-        "elements": [
-            {
-                "type": "button",
-                "text": {
-                    "type": "plain_text",
-                    "text": "📊 詳細ダッシュボードを見る",
-                    "emoji": True
-                },
-                "url": DASHBOARD_URL,
-                "style": "primary"
-            }
-        ]
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": f"📊 詳細ダッシュボードを見る\n<{DASHBOARD_URL}|👉 ダッシュボードを開く>"
+        }
     })
 
     return blocks
@@ -283,7 +237,6 @@ def build_slack_blocks(alert_members, all_members):
 # ─── Slack 投稿 ───────────────────────────────────────────────────────────────
 
 def post_to_slack(blocks):
-    """Slack Webhookへ投稿"""
     payload = json.dumps({"blocks": blocks}).encode("utf-8")
     req = urllib.request.Request(
         SLACK_WEBHOOK_URL,
@@ -298,34 +251,27 @@ def post_to_slack(blocks):
 
 def main():
     print("=== Land CS タスクアラート開始 ===")
-    today = get_today_jst()
     print(f"実行日時（JST）: {datetime.now(JST).strftime('%Y/%m/%d %H:%M')}")
 
-    # プロジェクトID取得
     print(f"プロジェクト取得中: {PROJECT_KEY}")
     project_id = get_project_id()
     print(f"  → プロジェクトID: {project_id}")
 
-    # メンバー取得
     print("メンバー一覧取得中...")
     members = get_members(project_id)
     print(f"  → {len(members)}名取得")
 
-    # タスク分析
     print("タスク分析中...")
     alert_members = analyze_member_tasks(members, project_id)
     print(f"  → アラート対象: {len(alert_members)}名")
 
-    # シグナル別集計
     red    = [m for m in alert_members if get_signal(m) == "red"]
     yellow = [m for m in alert_members if get_signal(m) == "yellow"]
     green  = [m for m in members if m["name"] not in {a["name"] for a in alert_members}]
     print(f"  🔴 緊急: {len(red)}名 / 🟡 注意: {len(yellow)}名 / 🟢 順調: {len(green)}名")
 
-    # Block Kit生成
     blocks = build_slack_blocks(alert_members, members)
 
-    # Slack投稿
     print("Slackへ投稿中...")
     status, body = post_to_slack(blocks)
     print(f"  → ステータス: {status} / レスポンス: {body}")
