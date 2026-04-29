@@ -2,10 +2,12 @@ name: task_alert
 
 on:
   schedule:
-    - cron: '0 23 * * 0-4'  # 毎朝 8:00 JST（月〜金）= UTC 23:00（日〜木）
-  workflow_dispatch:          # 手動実行も可能
+    - cron: '0 23 * * 0-4'
+  workflow_dispatch: {}
 
-permissions:  contents: write
+permissions:
+  contents: write
+
 jobs:
   alert:
     runs-on: ubuntu-22.04
