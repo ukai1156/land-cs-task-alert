@@ -323,7 +323,6 @@ def generate_slack_html(results: list, summary: dict) -> str:
 
 </body></html>"""
 
-
 # ─────────────────────────────────────────
 # ダッシュボードHTML生成
 # ─────────────────────────────────────────
