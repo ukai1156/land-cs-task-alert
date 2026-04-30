@@ -49,10 +49,10 @@
 <body>
 <div class="page-header">
   <div class="page-title">🏢 Land CS チーム タスクダッシュボード</div>
-  <span class="header-badge">🔴 期限切れ 23件</span>
-  <span class="header-badge">🟠 今日〆切 0件</span>
-  <span class="header-badge">🟡 5日以内 1件</span>
-  <span class="header-badge">👥 全13名 35件</span>
+  <span class="header-badge">🔴 期限切れ 21件</span>
+  <span class="header-badge">🟠 今日〆切 1件</span>
+  <span class="header-badge">🟡 5日以内 0件</span>
+  <span class="header-badge">👥 全12名 33件</span>
 </div>
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('tab1',this)">⚡ 今日・明日〆切</button>
@@ -61,9 +61,9 @@
 </div>
 <div id="tab1" class="tab-content active">
   <div class="section-heading red">🔴 今日〆切</div>
-  <p class='empty-msg'>🎉 ありません</p>
+  <table class='ticket-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody><tr><td>ukai</td><td>【AAB】キックオフ議事録確認依頼</td><td style='color:#ef4444;font-weight:bold;'>今日</td></tr></tbody></table>
   <div class="section-heading orange">🟠 明日〆切</div>
-  <table class='ticket-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody><tr><td>ukai</td><td>【AAB】キックオフ議事録確認依頼</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr></tbody></table>
+  <p class='empty-msg'>🎉 ありません</p>
 </div>
 <div id="tab2" class="tab-content">
   <div class="filter-bar">
@@ -78,29 +78,14 @@
             <span class="badge" style="background:#ef4444;">🔴 危険</span>
             <span class="member-name">ukai</span>
             <span class="count-badge overdue-badge">期限切れ1件</span>
-            <span class="count-badge today-badge">今日0件</span>
-            <span class="count-badge soon-badge">5日以内1件</span>
-            <span class="count-badge ok-badge">余裕0件</span>
-            <span class="chevron">▼</span>
-          </div>
-          <div class="accordion-body" style="display:none;">
-            <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【KFB再受注】キックオフ議事録確認依頼</td><td>1日超過</td></tr><tr><td>【AAB】キックオフ議事録確認依頼</td><td>明日</td></tr></tbody></table>
-          </div>
-        </div>
-        <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="badge" style="background:#ef4444;">🔴 危険</span>
-            <span class="member-name">okuda</span>
-            <span class="count-badge overdue-badge">期限切れ2件</span>
-            <span class="count-badge today-badge">今日0件</span>
+            <span class="count-badge today-badge">今日1件</span>
             <span class="count-badge soon-badge">5日以内0件</span>
             <span class="count-badge ok-badge">余裕0件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【HAB-03】CostEstimation確認依頼（撤去作業なしパターン/SHOPコスト）</td><td>1日超過</td></tr><tr><td>【HAB-02】CostEstimation確認依頼（撤去一連作業パターン/SHOPコスト）</td><td>1日超過</td></tr></tbody></table>
+            <tbody><tr><td>【KFB再受注】キックオフ議事録確認依頼</td><td>2日超過</td></tr><tr><td>【AAB】キックオフ議事録確認依頼</td><td>今日</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -115,7 +100,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【MAPIO】サービス仕様書　作成・確認依頼</td><td>12日超過</td></tr></tbody></table>
+            <tbody><tr><td>【MAPIO】サービス仕様書　作成・確認依頼</td><td>13日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -130,7 +115,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【SAY】受注エントリー：気象キャスター番組出演業務（2026年3月30〜31日）</td><td>29日超過</td></tr><tr><td>【SAY】受注エントリー：気象キャスター研修業務（2026年3月25〜27日）</td><td>期限なし</td></tr><tr><td>【FTV】サービス仕様書　作成依頼</td><td>37日超過</td></tr><tr><td>【KFB】サービス仕様書　確認依頼</td><td>47日超過</td></tr><tr><td>【IAT】キックオフ議事録確　認依頼</td><td>110日超過</td></tr><tr><td>【KFB】納品確認書　確認依頼</td><td>155日超過</td></tr><tr><td>【mit】サービス仕様書　作成・確認依頼</td><td>184日超過</td></tr></tbody></table>
+            <tbody><tr><td>【SAY】受注エントリー：気象キャスター番組出演業務（2026年3月30〜31日）</td><td>30日超過</td></tr><tr><td>【SAY】受注エントリー：気象キャスター研修業務（2026年3月25〜27日）</td><td>期限なし</td></tr><tr><td>【FTV】サービス仕様書　作成依頼</td><td>38日超過</td></tr><tr><td>【KFB】サービス仕様書　確認依頼</td><td>48日超過</td></tr><tr><td>【IAT】キックオフ議事録確　認依頼</td><td>111日超過</td></tr><tr><td>【KFB】納品確認書　確認依頼</td><td>156日超過</td></tr><tr><td>【mit】サービス仕様書　作成・確認依頼</td><td>185日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -145,7 +130,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【XPLO】サービス仕様書　作成・確認依頼</td><td>29日超過</td></tr><tr><td>【AKT】キックオフ議事録確　認依頼</td><td>期限なし</td></tr><tr><td>【XPLO】キックオフ議事録確　認依頼</td><td>期限なし</td></tr></tbody></table>
+            <tbody><tr><td>【XPLO】サービス仕様書　作成・確認依頼</td><td>30日超過</td></tr><tr><td>【AKT】キックオフ議事録確　認依頼</td><td>期限なし</td></tr><tr><td>【XPLO】キックオフ議事録確　認依頼</td><td>期限なし</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -160,7 +145,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【mit】CostEstimation確認依頼（SHOP）</td><td>29日超過</td></tr></tbody></table>
+            <tbody><tr><td>【mit】CostEstimation確認依頼（SHOP）</td><td>30日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -175,7 +160,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【NBN】キックオフ議事録確　認依頼</td><td>89日超過</td></tr><tr><td>【NBN】キックオフ議事録確　認依頼</td><td>89日超過</td></tr></tbody></table>
+            <tbody><tr><td>【NBN】キックオフ議事録確　認依頼</td><td>90日超過</td></tr><tr><td>【NBN】キックオフ議事録確　認依頼</td><td>90日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -190,7 +175,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【KBS】キックオフ議事録 確認依頼</td><td>100日超過</td></tr><tr><td>【TNC】キックオフ議事録 確認依頼</td><td>期限なし</td></tr><tr><td>【UMK】キックオフ議事録 確認依頼</td><td>112日超過</td></tr><tr><td>【UMK】キックオフ議事録 確認依頼</td><td>112日超過</td></tr><tr><td>【UMK】キックオフ議事録 確認依頼</td><td>112日超過</td></tr><tr><td>【KAB】キックオフ議事録 確認依頼</td><td>112日超過</td></tr></tbody></table>
+            <tbody><tr><td>【KBS】キックオフ議事録 確認依頼</td><td>101日超過</td></tr><tr><td>【TNC】キックオフ議事録 確認依頼</td><td>期限なし</td></tr><tr><td>【UMK】キックオフ議事録 確認依頼</td><td>113日超過</td></tr><tr><td>【UMK】キックオフ議事録 確認依頼</td><td>113日超過</td></tr><tr><td>【UMK】キックオフ議事録 確認依頼</td><td>113日超過</td></tr><tr><td>【KAB】キックオフ議事録 確認依頼</td><td>113日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -205,7 +190,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【YTV】キックオフ議事録確認依頼</td><td>97日超過</td></tr></tbody></table>
+            <tbody><tr><td>【YTV】キックオフ議事録確認依頼</td><td>98日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -220,7 +205,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【RNC】キックオフ議事録確認依頼</td><td>124日超過</td></tr><tr><td>【KRY】納品確認書確認依頼</td><td>180日超過</td></tr><tr><td>【KRY】キックオフ議事録確　認依頼</td><td>期限なし</td></tr><tr><td>【XCPCちゅピCOM】サービス終了MOP　確認依頼</td><td>期限なし</td></tr></tbody></table>
+            <tbody><tr><td>【RNC】キックオフ議事録確認依頼</td><td>125日超過</td></tr><tr><td>【KRY】納品確認書確認依頼</td><td>181日超過</td></tr><tr><td>【KRY】キックオフ議事録確　認依頼</td><td>期限なし</td></tr><tr><td>【XCPCちゅピCOM】サービス終了MOP　確認依頼</td><td>期限なし</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -235,7 +220,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【IAT】納品確認書　確認依頼</td><td>119日超過</td></tr><tr><td>【IAT】キックオフ議事録確　認依頼</td><td>期限なし</td></tr></tbody></table>
+            <tbody><tr><td>【IAT】納品確認書　確認依頼</td><td>120日超過</td></tr><tr><td>【IAT】キックオフ議事録確　認依頼</td><td>期限なし</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -250,7 +235,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【NIB】設定依頼：Iot気象データ提供サービス_API設定変更 </td><td>9日後</td></tr><tr><td>【TKU】キックオフ議事録確　認依頼</td><td>期限なし</td></tr><tr><td>【TOS】キックオフ議事録確　認依頼</td><td>期限なし</td></tr></tbody></table>
+            <tbody><tr><td>【NIB】設定依頼：Iot気象データ提供サービス_API設定変更 </td><td>8日後</td></tr><tr><td>【TKU】キックオフ議事録確　認依頼</td><td>期限なし</td></tr><tr><td>【TOS】キックオフ議事録確　認依頼</td><td>期限なし</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -265,16 +250,16 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【EX】防災体系整理に伴う新規データ配信依頼 | 【局コード】Entry目的：内容</td><td>15日後</td></tr></tbody></table>
+            <tbody><tr><td>【EX】防災体系整理に伴う新規データ配信依頼 | 【局コード】Entry目的：内容</td><td>14日後</td></tr></tbody></table>
           </div>
         </div></div>
 </div>
 <div id="tab3" class="tab-content">
   <div class="chart-container">
-    <canvas id="workloadChart" height="520"></canvas>
+    <canvas id="workloadChart" height="480"></canvas>
   </div>
 </div>
-<div class="page-footer">※ データはBacklog「BRANDエントリー」プロジェクトから取得（2026/04/29（水）時点）。</div>
+<div class="page-footer">※ データはBacklog「BRANDエントリー」プロジェクトから取得（2026/04/30（木）時点）。</div>
 <script>
   function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -300,12 +285,12 @@
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ["yam-ka", "katsumata", "上島光雄", "Miyuki Hirose", "Nakanishi Mikako (na-mik)", "ukai", "okuda", "yuri", "takach", "kasakou", "高森美枝", "machida shuichi", "moriyama"],
+      labels: ["yam-ka", "katsumata", "上島光雄", "Miyuki Hirose", "Nakanishi Mikako (na-mik)", "ukai", "yuri", "takach", "kasakou", "高森美枝", "machida shuichi", "moriyama"],
       datasets: [
-        { label: '期限切れ', data: [6, 5, 2, 1, 0, 1, 2, 2, 1, 1, 1, 1, 0], backgroundColor: '#dc2626' },
-        { label: '今日〆切', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   backgroundColor: '#f97316' },
-        { label: '5日以内',  data: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],    backgroundColor: '#d97706' },
-        { label: '6日以上',  data: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],      backgroundColor: '#16a34a' },
+        { label: '期限切れ', data: [6, 5, 2, 1, 0, 1, 2, 1, 1, 1, 1, 0], backgroundColor: '#dc2626' },
+        { label: '今日〆切', data: [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],   backgroundColor: '#f97316' },
+        { label: '5日以内',  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],    backgroundColor: '#d97706' },
+        { label: '6日以上',  data: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],      backgroundColor: '#16a34a' },
       ],
     },
     options: {
