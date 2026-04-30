@@ -590,8 +590,7 @@ def main() -> None:
                 f"🔴 期限切れ: {summary['overdue']}件　"
                 f"🟠 今日〆切: {summary['today']}件　"
                 f"🟡 5日以内: {summary['soon']}件　"
-                f"👥 対象: {summary['members']}名"
-            ),
+                f"👥 対象: {summary['members']}名\n"    f"📊 詳細ダッシュボード: https://ukai1156.github.io/land-cs-task-alert/")
         )
     except Exception as e:
         print(f"⚠️ Slack画像投稿エラー: {e}")
