@@ -238,55 +238,102 @@ def generate_slack_html(results: list, summary: dict) -> str:
     weekdays_ja = ["月", "火", "水", "木", "金", "土", "日"]
     today_str = TODAY.strftime(f"%Y/%m/%d（{weekdays_ja[TODAY.weekday()]}）")
 
-    member_rows_html = ""
-    for member in results:
+    # メンバーカード生成
+    def member_card(member):
         signal = member["signal"]
         icon = {"red": "🔴", "yellow": "🟡", "green": "🟢"}.get(signal, "⚪")
-        border_color = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#94a3b8")
-        label = {"red": "危険", "yellow": "注意", "green": "順調"}.get(signal, "")
-        member_rows_html += f"""
-        <div style="display:flex;align-items:center;padding:8px 12px;
-                    border-left:4px solid {border_color};background:#2a2d31;
-                    margin-bottom:6px;border-radius:4px;">
-          <span style="font-size:18px;margin-right:8px;">{icon}</span>
-          <span style="color:#e8e8e8;font-weight:bold;flex:1;">{member['name']}</span>
-          <span style="color:#aaa;font-size:12px;margin-right:8px;">{label}</span>
-          <span style="color:#ef4444;font-size:12px;margin-right:6px;">期限切れ {member['overdue']}件</span>
-          <span style="color:#f97316;font-size:12px;margin-right:6px;">今日 {member['today']}件</span>
-          <span style="color:#3b82f6;font-size:12px;">5日以内 {member['soon'] + member['tomorrow']}件</span>
+        if signal == "green":
+            detail = f"5日以内{member['soon']}件"
+        else:
+            parts = []
+            if member["overdue"] > 0:
+                parts.append(f"期限切れ{member['overdue']}件")
+            if member["today"] > 0:
+                parts.append(f"今日{member['today']}件")
+            if member["soon"] > 0:
+                parts.append(f"5日以内{member['soon']}件")
+            detail = "・".join(parts) or "対象タスクなし"
+        return f"""
+        <div style="background:#16213e;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:14px;font-weight:700;color:#e2e8f0;">{icon} {member['name']}</div>
+          <div style="font-size:12px;color:#a0aec0;">{detail}</div>
         </div>"""
+
+    # セクション生成
+    def member_section(emoji, label, members):
+        if not members:
+            return ""
+        cards = "".join(member_card(m) for m in members)
+        return f"""
+        <div style="margin-bottom:20px;">
+          <div style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:10px;">
+            {emoji} {label}
+            <span style="font-size:12px;color:#718096;font-weight:400;">（{len(members)}名）</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+            {cards}
+          </div>
+        </div>"""
+
+    red_members    = [m for m in results if m["signal"] == "red"]
+    yellow_members = [m for m in results if m["signal"] == "yellow"]
+    green_members  = [m for m in results if m["signal"] == "green"]
+
+    sections = (
+        member_section("🔴", "緊急メンバー（期限切れまたは今日〆切あり）", red_members) +
+        member_section("🟡", "注意メンバー（5日以内3件以上）", yellow_members) +
+        member_section("🟢", "順調メンバー（期限タスク1件以上・緊急/注意以外）", green_members)
+    )
+
+    dashboard_url = "https://ukai1156.github.io/land-cs-task-alert/"
 
     return f"""<!DOCTYPE html>
 <html lang="ja"><head><meta charset="UTF-8">
 <style>
   * {{ margin:0;padding:0;box-sizing:border-box; }}
-  body {{ background:#1a1d21;font-family:"Hiragino Sans","Yu Gothic",sans-serif;width:800px;padding:24px;color:#e8e8e8; }}
+  body {{ background:#1a1a2e;font-family:"Hiragino Sans","Yu Gothic","Segoe UI",sans-serif;width:800px;padding:20px; }}
 </style></head><body>
-  <div style="font-size:22px;font-weight:bold;margin-bottom:6px;color:#fff;">📋 タスク期限アラート</div>
-  <div style="color:#aaa;font-size:13px;margin-bottom:20px;">{today_str}</div>
-  <div style="display:flex;gap:12px;margin-bottom:20px;">
-    <div style="flex:1;padding:14px;border-radius:8px;background:#3d1f1f;text-align:center;">
-      <div style="font-size:12px;color:#ccc;margin-bottom:6px;">🔴 期限切れ</div>
-      <div style="font-size:28px;font-weight:bold;color:#ef4444;">{summary['overdue']}</div>
+
+  <!-- ヘッダー -->
+  <div style="background:#16213e;border-radius:12px;border-left:4px solid #f1c40f;padding:16px 20px;margin-bottom:20px;">
+    <div style="font-size:20px;font-weight:800;color:#ffffff;margin-bottom:6px;">⚠ 今日・5日以内の〆切タスク確認</div>
+    <div style="font-size:13px;color:#a0aec0;">🗂 Land CS チーム　📅 {today_str} 朝 8:00</div>
+  </div>
+
+  <!-- サマリーカード -->
+  <div style="display:flex;gap:12px;margin-bottom:24px;">
+    <div style="background:#16213e;border-radius:14px;border-left:4px solid #e74c3c;padding:18px 20px;flex:1;">
+      <div style="font-size:22px;margin-bottom:6px;">🔴</div>
+      <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">期限切れ</div>
+      <div style="font-size:32px;font-weight:800;color:#e74c3c;">{summary['overdue']}</div>
     </div>
-    <div style="flex:1;padding:14px;border-radius:8px;background:#3d2a1f;text-align:center;">
-      <div style="font-size:12px;color:#ccc;margin-bottom:6px;">🟠 今日〆切</div>
-      <div style="font-size:28px;font-weight:bold;color:#f97316;">{summary['today']}</div>
+    <div style="background:#16213e;border-radius:14px;border-left:4px solid #e74c3c;padding:18px 20px;flex:1;">
+      <div style="font-size:22px;margin-bottom:6px;">🔴</div>
+      <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">今日〆切</div>
+      <div style="font-size:32px;font-weight:800;color:#e74c3c;">{summary['today']}</div>
     </div>
-    <div style="flex:1;padding:14px;border-radius:8px;background:#3d361f;text-align:center;">
-      <div style="font-size:12px;color:#ccc;margin-bottom:6px;">🟡 5日以内</div>
-      <div style="font-size:28px;font-weight:bold;color:#eab308;">{summary['soon']}</div>
+    <div style="background:#16213e;border-radius:14px;border-left:4px solid #718096;padding:18px 20px;flex:1;">
+      <div style="font-size:22px;margin-bottom:6px;">⏰</div>
+      <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">5日以内</div>
+      <div style="font-size:32px;font-weight:800;color:#e2e8f0;">{summary['soon']}</div>
     </div>
-    <div style="flex:1;padding:14px;border-radius:8px;background:#1f2e3d;text-align:center;">
-      <div style="font-size:12px;color:#ccc;margin-bottom:6px;">👥 対象メンバー</div>
-      <div style="font-size:28px;font-weight:bold;color:#3b82f6;">{summary['members']}</div>
+    <div style="background:#16213e;border-radius:14px;border-left:4px solid #718096;padding:18px 20px;flex:1;">
+      <div style="font-size:22px;margin-bottom:6px;">👥</div>
+      <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">担当者数</div>
+      <div style="font-size:32px;font-weight:800;color:#e2e8f0;">{summary['members']}</div>
     </div>
   </div>
-  <div style="font-size:13px;color:#888;margin-bottom:10px;">メンバー別アラート状況</div>
-  {member_rows_html}
-  <div style="margin-top:16px;font-size:11px;color:#666;border-top:1px solid #333;padding-top:10px;">
-    プロジェクト: {PROJECT_KEY}　|　生成日時: {summary['generated_at']}
+
+  <!-- メンバーセクション -->
+  {sections}
+
+  <!-- フッター -->
+  <div style="border-top:1px solid #2d3748;padding-top:14px;font-size:12px;color:#718096;">
+    🗂 詳細はこちら →
+    <span style="color:#63b3ed;text-decoration:underline;">{dashboard_url}</span>
+    <span style="margin-left:16px;color:#4a5568;">PROJECT: {PROJECT_KEY}</span>
   </div>
+
 </body></html>"""
 
 # ─────────────────────────────────────────
