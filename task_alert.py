@@ -434,7 +434,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     chart_today_js   = json.dumps([m["today"]   for m in sorted_members])
     chart_soon_js    = json.dumps([m["soon"] + m["tomorrow"] for m in sorted_members])
     chart_ok_js      = json.dumps([m["ok"]     for m in sorted_members])
-    chart_height     = max(300, len(sorted_members) * 40)
+    chart_height     = max(200, len(sorted_members) * 20)
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -622,6 +622,12 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     options: {{
       indexAxis: 'y',
       responsive: true,
+      datasets: {{
+        bar: {{
+          barThickness: 10,
+          categoryPercentage: 0.4,
+        }},
+      }},
       plugins: {{
         legend: {{
           position: 'top',
