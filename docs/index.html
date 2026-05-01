@@ -372,7 +372,7 @@
   <div class="tab3-heading">📊 メンバー別ワークロード（積み上げ横棒グラフ）</div>
   <div class="tab3-subtext">タスク数の多い順に並べています。</div>
   <div class="chart-container">
-    <canvas id="workloadChart" height="680"></canvas>
+    <canvas id="workloadChart" height="340"></canvas>
   </div>
 </div>
 
@@ -422,6 +422,12 @@
     options: {
       indexAxis: 'y',
       responsive: true,
+      datasets: {
+        bar: {
+          barThickness: 10,
+          categoryPercentage: 0.4,
+        },
+      },
       plugins: {
         legend: {
           position: 'top',
