@@ -323,12 +323,6 @@ def generate_slack_html(results: list, summary: dict) -> str:
   {sections}
 
   <!-- フッター -->
-  <div style="border-top:1px solid #2d3748;padding-top:14px;font-size:12px;color:#718096;">
-    🗂 詳細はこちら →
-    <span style="color:#63b3ed;text-decoration:underline;">{dashboard_url}</span>
-    <span style="margin-left:16px;color:#4a5568;">PROJECT: {PROJECT_KEY}</span>
-  </div>
-
 </body></html>"""
 
 # ─────────────────────────────────────────
