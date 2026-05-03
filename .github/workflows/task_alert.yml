@@ -3,7 +3,7 @@ name: task_alert
 on:
   schedule:
     - cron: '0 23 * * 0-4'  # 毎朝 8:00 JST（月〜金）= UTC 23:00（日〜木）
-  workflow_dispatch: {}       # 手動実行も可能
+  workflow_dispatch: {}
 
 jobs:
   alert:
@@ -39,7 +39,7 @@ jobs:
 
       - name: タスクアラートを実行
         env:
-          SLACK_BOT_TOKEN:      ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL_ID:     ${{ secrets.SLACK_CHANNEL_ID }}
-          BACKLOG_PROJECT_KEY:  ${{ secrets.BACKLOG_PROJECT_KEY }}
-          DASHBOARD_URL:        ${{ secrets.DASHBOARD_URL }}
+          SLACK_BOT_TOKEN:   ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID:  ${{ secrets.SLACK_CHANNEL_ID }}
+          DASHBOARD_URL:     ${{ secrets.DASHBOARD_URL }}
+        run: python task_alert.py
