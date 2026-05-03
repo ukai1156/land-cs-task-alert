@@ -3,11 +3,11 @@
 タスクアラート自動化ツール
 Land CSチーム向け Backlog タスク期限アラート Slack 投稿スクリプト
 
-実行環境: GitHub Actions (ubuntu-latest)
+実行環境: GitHub Actions (ubuntu-22.04)
 実行スケジュール: 毎朝 8:00 JST（月〜金）
 通知形式: Playwright によるHTML→スクリーンショット → Slack Files API で画像投稿
 アウトプット②: 詳細ダッシュボードHTML（dashboard.html）を生成
-取得対象: 親チケットのみ
+取得対象: S3に配置された issues.json（開発チームが毎朝8:00に更新）
 """
 
 import os
@@ -22,11 +22,14 @@ from zoneinfo import ZoneInfo
 # ─────────────────────────────────────────
 # 設定
 # ─────────────────────────────────────────
-BACKLOG_API_KEY  = os.environ["BACKLOG_API_KEY"]
 SLACK_BOT_TOKEN  = os.environ["SLACK_BOT_TOKEN"]
 SLACK_CHANNEL_ID = os.environ["SLACK_CHANNEL_ID"]
-BACKLOG_SPACE    = os.environ.get("BACKLOG_SPACE", "wni")
 PROJECT_KEY      = os.environ.get("BACKLOG_PROJECT_KEY", "BRAND_ENTRY")
+DASHBOARD_URL    = os.environ.get("DASHBOARD_URL", "")
+ISSUES_JSON_URL  = os.environ.get(
+    "ISSUES_JSON_URL",
+    "https://wni-dev-land-tool-renaissance-cs-ane1.s3.ap-northeast-1.amazonaws.com/ukai/issues.json"
+)
 
 JST           = ZoneInfo("Asia/Tokyo")
 TODAY         = date.today()
@@ -34,51 +37,18 @@ ALERT_DAYS    = 5
 CAUTION_COUNT = 3
 
 # ─────────────────────────────────────────
-# Backlog API
+# S3 から issues.json を取得
 # ─────────────────────────────────────────
 
-def backlog_get(path: str, params: dict) -> list:
-    """ページネーション対応 Backlog GET リクエスト"""
-    base_url = f"https://{BACKLOG_SPACE}.backlog.jp/api/v2{path}"
-    all_results = []
-    offset = 0
-    count = 100
-    while True:
-        query_params = {**params, "apiKey": BACKLOG_API_KEY, "count": count, "offset": offset}
-        encoded = urllib.parse.urlencode(query_params, doseq=True)
-        url = f"{base_url}?{encoded}"
-        with urllib.request.urlopen(url) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-        if not isinstance(data, list):
-            return data
-        all_results.extend(data)
-        if len(data) < count:
-            break
-        offset += count
-    return all_results
-
-
-def get_project_id(project_key: str) -> int:
-    """プロジェクトキーからプロジェクトIDを取得"""
-    projects = backlog_get("/projects", {})
-    for p in projects:
-        if p.get("projectKey") == project_key:
-            return p["id"]
-    raise ValueError(f"プロジェクト '{project_key}' が見つかりません")
-
-
-def fetch_issues(project_id: int) -> list:
-    """未完了の親チケットのみ取得"""
-    params = {
-        "projectId[]": project_id,
-        "statusId[]": [1, 2, 3],
-        "parentChild": 2,
-    }
-    return backlog_get("/issues", params)
-
-# ─────────────────────────────────────────
-# 判定ロジック
-# ─────────────────────────────────────────
+def fetch_issues() -> list:
+    """S3に配置された issues.json を取得して返す"""
+    try:
+        with urllib.request.urlopen(ISSUES_JSON_URL) as resp:
+            issues = json.loads(resp.read().decode("utf-8"))
+        print(f"✅ issues.json 取得完了: {len(issues)} 件")
+        return issues
+    except Exception as e:
+        raise RuntimeError(f"issues.json の取得に失敗しました: {e}")
 
 def classify_issue(due_date) -> str:
     """期限日から状態を分類する"""
@@ -737,22 +707,18 @@ def post_image_to_slack(image_path: str, title: str, initial_comment: str) -> No
 def main() -> None:
     print("🚀 タスクアラートスクリプト開始")
 
-    # 1. プロジェクトID取得
-    project_id = get_project_id(PROJECT_KEY)
-    print(f"プロジェクトID: {project_id}")
-
-    # 2. チケット取得
-    issues = fetch_issues(project_id)
+    # 1. S3から issues.json を取得
+    issues = fetch_issues()
     print(f"取得チケット数: {len(issues)} 件")
 
-    # 3. 担当者別集計
+    # 2. 担当者別集計
     results = aggregate_by_assignee(issues)
     print(f"対象メンバー数: {len(results)} 名")
 
-    # 4. サマリー集計
+    # 3. サマリー集計
     summary = build_summary(results, len(issues))
 
-    # 5. Slack通知画像生成 → スクリーンショット → Slack投稿
+    # 4. Slack通知画像生成 → スクリーンショット → Slack投稿
     slack_html = generate_slack_html(results, summary)
     screenshot_path = "/tmp/task_alert.png"
     weekdays_ja = ["月", "火", "水", "木", "金", "土", "日"]
@@ -767,18 +733,19 @@ def main() -> None:
                 f"🔴 期限切れ: {summary['overdue']}件　"
                 f"🟠 今日〆切: {summary['today']}件　"
                 f"🟡 5日以内: {summary['soon']}件　"
-                f"👥 対象: {summary['members']}名\n"    f"📊 詳細ダッシュボード: https://ukai1156.github.io/land-cs-task-alert/")
+                f"👥 対象: {summary['members']}名\n"
+                f"📊 詳細ダッシュボード: {DASHBOARD_URL}")
         )
     except Exception as e:
         print(f"⚠️ Slack画像投稿エラー: {e}")
 
-    # 6. ダッシュボードHTML生成
+    # 5. ダッシュボードHTML生成
     dashboard_html = generate_dashboard_html(results, summary)
     with open("dashboard.html", "w", encoding="utf-8") as f:
         f.write(dashboard_html)
     print("ダッシュボードHTML生成完了: dashboard.html")
 
-    # 7. ログ出力
+    # 6. ログ出力
     print(f"\n📝 生成日時: {summary['generated_at']}")
     print(f"期限切れ: {summary['overdue']}件 / 今日: {summary['today']}件 / 5日以内: {summary['soon']}件")
     print("✅ 処理完了")
