@@ -286,7 +286,7 @@ def generate_slack_html(results: list, summary: dict) -> str:
 <html lang="ja"><head><meta charset="UTF-8">
 <style>
   * {{ margin:0;padding:0;box-sizing:border-box; }}
-  body {{ background:#1a1a2e;font-family:"Hiragino Sans","Yu Gothic","Segoe UI",sans-serif;width:800px;padding:20px; }}
+  body {{ background:#1a1a2e;font-family:"Noto Sans CJK JP","Hiragino Sans","Yu Gothic","Segoe UI",sans-serif;width:800px;padding:20px; }}
 </style></head><body>
 
   <!-- ヘッダー -->
