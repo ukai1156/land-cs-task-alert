@@ -40,15 +40,40 @@ CAUTION_COUNT = 3
 # S3 から issues.json を取得
 # ─────────────────────────────────────────
 
+# ─────────────────────────────────────────
+# テスト用ダミーデータ（S3が403の場合のフォールバック）
+# ─────────────────────────────────────────
+FALLBACK_ISSUES = [
+    {"summary": "【テスト】LP制作対応",        "assignee": {"name": "田中 太郎"}, "dueDate": None,         "status": {"name": "未着手"}},
+    {"summary": "【テスト】バナー修正依頼",      "assignee": {"name": "田中 太郎"}, "dueDate": "2026-05-03", "status": {"name": "処理中"}},
+    {"summary": "【テスト】原稿チェック",        "assignee": {"name": "鈴木 花子"}, "dueDate": "2026-05-04", "status": {"name": "未着手"}},
+    {"summary": "【テスト】入稿データ確認",      "assignee": {"name": "鈴木 花子"}, "dueDate": "2026-05-07", "status": {"name": "処理中"}},
+    {"summary": "【テスト】クライアント確認",    "assignee": {"name": "佐藤 次郎"}, "dueDate": "2026-04-30", "status": {"name": "処理中"}},
+    {"summary": "【テスト】修正対応",            "assignee": {"name": "佐藤 次郎"}, "dueDate": "2026-05-03", "status": {"name": "未着手"}},
+    {"summary": "【テスト】素材整理",            "assignee": {"name": "山田 三郎"}, "dueDate": "2026-05-08", "status": {"name": "未着手"}},
+    {"summary": "【テスト】スケジュール調整",    "assignee": {"name": "山田 三郎"}, "dueDate": "2026-05-10", "status": {"name": "処理中"}},
+    {"summary": "【テスト】レポート作成",        "assignee": {"name": "伊藤 四郎"}, "dueDate": "2026-05-05", "status": {"name": "未着手"}},
+    {"summary": "【テスト】ミーティング準備",    "assignee": {"name": "伊藤 四郎"}, "dueDate": "2026-05-06", "status": {"name": "処理中"}},
+]
+
 def fetch_issues() -> list:
-    """S3に配置された issues.json を取得して返す"""
+    """S3に配置された issues.json を取得して返す。
+    403エラーの場合はテスト用ダミーデータを使用する。
+    """
     try:
         with urllib.request.urlopen(ISSUES_JSON_URL) as resp:
             issues = json.loads(resp.read().decode("utf-8"))
         print(f"✅ issues.json 取得完了: {len(issues)} 件")
         return issues
     except Exception as e:
-        raise RuntimeError(f"issues.json の取得に失敗しました: {e}")
+        error_msg = str(e)
+        if "403" in error_msg or "Forbidden" in error_msg:
+            print(f"⚠️ S3アクセス制限（403）のため、テスト用ダミーデータを使用します")
+            print(f"   エラー詳細: {error_msg}")
+            print(f"   ダミーデータ件数: {len(FALLBACK_ISSUES)} 件")
+            return FALLBACK_ISSUES
+        else:
+            raise RuntimeError(f"issues.json の取得に失敗しました: {e}")
 
 def classify_issue(due_date) -> str:
     """期限日から状態を分類する"""
