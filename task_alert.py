@@ -27,7 +27,7 @@ PROJECT_KEY      = os.environ.get("BACKLOG_PROJECT_KEY", "BRAND_ENTRY")
 DASHBOARD_URL    = os.environ.get("DASHBOARD_URL", "")
 ISSUES_JSON_URL  = os.environ.get(
     "ISSUES_JSON_URL",
-    "https://d3epywq9jpw7qy.cloudfront.net/ukai/issues.json?t=" + Date.now()"
+    "https://d3epywq9jpw7qy.cloudfront.net/ukai/issues.json"
 )
 
 JST           = ZoneInfo("Asia/Tokyo")
