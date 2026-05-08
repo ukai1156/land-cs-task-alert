@@ -6,7 +6,6 @@ Land CSチーム向け Backlog タスク期限アラート Slack 投稿スクリ
 実行環境: GitHub Actions (ubuntu-22.04)
 実行スケジュール: 毎朝 8:00 JST（月〜金）
 通知形式: Playwright によるHTML→スクリーンショット → Slack Files API で画像投稿
-アウトプット②: 詳細ダッシュボードHTML（dashboard.html）を生成
 取得対象: S3に配置された issues.json（開発チームが毎朝8:00に更新）
 """
 
@@ -28,7 +27,7 @@ PROJECT_KEY      = os.environ.get("BACKLOG_PROJECT_KEY", "BRAND_ENTRY")
 DASHBOARD_URL    = os.environ.get("DASHBOARD_URL", "")
 ISSUES_JSON_URL  = os.environ.get(
     "ISSUES_JSON_URL",
-    "https://wni-dev-land-tool-renaissance-cs-ane1.s3.ap-northeast-1.amazonaws.com/ukai/issues.json"
+    "https://d3epywq9jpw7qy.cloudfront.net/ukai/issues.json"
 )
 
 JST           = ZoneInfo("Asia/Tokyo")
@@ -189,42 +188,6 @@ def build_summary(results: list, total_issues: int) -> dict:
     }
 
 # ─────────────────────────────────────────
-# Slack Block Kit 構築
-# ─────────────────────────────────────────
-
-def build_blocks(results: list, summary: dict) -> list:
-    """Slack Block Kit のブロックリストを構築"""
-    weekdays_ja = ["月", "火", "水", "木", "金", "土", "日"]
-    today_str = TODAY.strftime(f"%Y/%m/%d（{weekdays_ja[TODAY.weekday()]}）")
-    blocks = [
-        {"type": "header", "text": {"type": "plain_text", "text": f"📋 タスク期限アラート｜{today_str}", "emoji": True}},
-        {"type": "divider"},
-        {"type": "section", "fields": [
-            {"type": "mrkdwn", "text": f"*🔴 期限切れ*\n{summary['overdue']} 件"},
-            {"type": "mrkdwn", "text": f"*🟠 今日〆切*\n{summary['today']} 件"},
-            {"type": "mrkdwn", "text": f"*🟡 5日以内*\n{summary['soon']} 件"},
-            {"type": "mrkdwn", "text": f"*👥 対象メンバー*\n{summary['members']} 名"},
-        ]},
-        {"type": "divider"},
-    ]
-    for member in results:
-        icon = {"red": "🔴", "yellow": "🟡", "green": "🟢"}.get(member["signal"], "⚪")
-        parts = [f"{icon} *{member['name']}*"]
-        if member["overdue"] > 0:
-            parts.append(f"期限切れ: {member['overdue']}件")
-        if member["today"] > 0:
-            parts.append(f"今日: {member['today']}件")
-        if member["tomorrow"] > 0:
-            parts.append(f"明日: {member['tomorrow']}件")
-        if member["soon"] > 0:
-            parts.append(f"5日以内: {member['soon']}件")
-        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": "　".join(parts)}})
-    blocks.append({"type": "divider"})
-    blocks.append({"type": "context", "elements": [{"type": "mrkdwn",
-        "text": f"対象プロジェクト: {PROJECT_KEY}　|　取得チケット数: {summary['total_issues']} 件　|　生成日時: {summary['generated_at']}"}]})
-    return blocks
-
-# ─────────────────────────────────────────
 # Slack通知HTML生成
 # ─────────────────────────────────────────
 
@@ -280,8 +243,6 @@ def generate_slack_html(results: list, summary: dict) -> str:
         member_section("🟢", "順調メンバー（期限タスク1件以上・緊急/注意以外）", green_members)
     )
 
-    dashboard_url = "https://ukai1156.github.io/land-cs-task-alert/"
-
     return f"""<!DOCTYPE html>
 <html lang="ja"><head><meta charset="UTF-8">
 <style>
@@ -323,331 +284,6 @@ def generate_slack_html(results: list, summary: dict) -> str:
   {sections}
 
   <!-- フッター -->
-</body></html>"""
-
-# ─────────────────────────────────────────
-# ダッシュボードHTML生成
-# ─────────────────────────────────────────
-
-def generate_dashboard_html(members_data: list, summary: dict) -> str:
-    """詳細ダッシュボードのHTMLを生成（3タブ構成）"""
-
-    # 日付：日本語形式
-    weekdays_ja = ["月", "火", "水", "木", "金", "土", "日"]
-    today_str_ja = TODAY.strftime(f"%Y/%m/%d") + f"（{weekdays_ja[TODAY.weekday()]}）"
-
-    # ── タブ1: 今日・明日〆切チケット収集 ──
-    today_rows = ""
-    tomorrow_rows = ""
-    today_count = 0
-    tomorrow_count = 0
-    for member in members_data:
-        for ticket in member["tickets"]:
-            due = ticket["due_date"]
-            title = ticket["title"].replace("<", "&lt;").replace(">", "&gt;")
-            name  = member["name"].replace("<", "&lt;").replace(">", "&gt;")
-            if due == "今日":
-                today_rows += f"<tr><td>{name}</td><td>{title}</td><td class='due-today'>今日</td></tr>"
-                today_count += 1
-            elif due == "明日":
-                tomorrow_rows += f"<tr><td>{name}</td><td>{title}</td><td class='due-tomorrow'>1日後</td></tr>"
-                tomorrow_count += 1
-
-    today_section = (
-        f"<table class='ticket-table today-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody>{today_rows}</tbody></table>"
-        if today_rows else "<p class='empty-msg'>🎉 ありません</p>"
-    )
-    tomorrow_section = (
-        f"<table class='ticket-table tomorrow-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody>{tomorrow_rows}</tbody></table>"
-        if tomorrow_rows else "<p class='empty-msg'>🎉 ありません</p>"
-    )
-
-    # ── タブ2: アコーディオンカード ──
-    accordion_cards = ""
-    total_members = len(members_data)
-    for i, member in enumerate(members_data):
-        signal = member["signal"]
-        border_color = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#22c55e")
-        dot_color    = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#22c55e")
-        badge_label  = {"red": "危険", "yellow": "注意", "green": "安全"}.get(signal, "安全")
-        total = member["total"]
-
-        # チケット行（期限切れは赤色表示）
-        ticket_rows = ""
-        for t in member["tickets"]:
-            due_display = t["due_date"]
-            due_class = ""
-            if "超過" in due_display:
-                due_class = "style='color:#ef4444;font-weight:bold;'"
-            elif due_display == "今日":
-                due_class = "style='color:#ef4444;font-weight:bold;'"
-            elif due_display == "明日" or due_display == "1日後":
-                due_class = "style='color:#f97316;font-weight:bold;'"
-            ticket_rows += f"<tr><td>{t['title'].replace('<','&lt;').replace('>','&gt;')}</td><td {due_class}>{due_display}</td></tr>"
-
-        # 件数バッジ（0件は非表示）
-        badges = ""
-        if member["overdue"] > 0:
-            badges += f"<span class='count-badge overdue-badge'>期限切れ{member['overdue']}件</span>"
-        if member["today"] > 0:
-            badges += f"<span class='count-badge today-badge'>今日{member['today']}件</span>"
-        if member["soon"] + member["tomorrow"] > 0:
-            badges += f"<span class='count-badge soon-badge'>5日以内{member['soon'] + member['tomorrow']}件</span>"
-        if member["ok"] > 0:
-            badges += f"<span class='count-badge ok-badge'>余裕{member['ok']}件</span>"
-
-        # 最初の1件はデフォルトで開く
-        body_display = "block" if i == 0 else "none"
-        chevron_class = "chevron open" if i == 0 else "chevron"
-
-        accordion_cards += f"""
-        <div class="accordion-card" data-signal="{signal}" style="border-left:4px solid {border_color};">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="signal-dot" style="background:{dot_color};"></span>
-            <span class="signal-label" style="color:{dot_color};">{badge_label}</span>
-            <span class="member-name">{member['name']}</span>
-            <span class="total-count">計{total}件</span>
-            {badges}
-            <span class="{chevron_class}">▼</span>
-          </div>
-          <div class="accordion-body" style="display:{body_display};">
-            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody>{ticket_rows}</tbody></table>
-          </div>
-        </div>"""
-
-    # ── タブ3: Chart.jsデータ ──
-    sorted_members   = sorted(members_data, key=lambda x: x["total"], reverse=True)
-    chart_labels_js  = json.dumps([m["name"] for m in sorted_members], ensure_ascii=False)
-    chart_overdue_js = json.dumps([m["overdue"] for m in sorted_members])
-    chart_today_js   = json.dumps([m["today"]   for m in sorted_members])
-    chart_soon_js    = json.dumps([m["soon"] + m["tomorrow"] for m in sorted_members])
-    chart_ok_js      = json.dumps([m["ok"]     for m in sorted_members])
-    chart_height     = max(300, len(sorted_members) * 40)
-
-    return f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Land CS チーム タスクダッシュボード</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-  * {{ margin:0;padding:0;box-sizing:border-box; }}
-  body {{ font-family:"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;background:#f1f5f9;color:#1e293b; }}
-
-  /* ── ヘッダー ── */
-  .page-header {{ background:#1e3a8a;padding:18px 32px 14px; }}
-  .page-title {{ font-size:22px;font-weight:bold;color:#fff;margin-bottom:4px; }}
-  .page-subtitle {{ font-size:13px;color:#93c5fd;margin-bottom:12px; }}
-  .header-badges {{ display:flex;gap:8px;flex-wrap:wrap; }}
-  .hbadge {{ padding:4px 14px;border-radius:20px;font-size:13px;font-weight:bold;color:#fff; }}
-  .hbadge-red    {{ background:#ef4444; }}
-  .hbadge-orange {{ background:#f97316; }}
-  .hbadge-yellow {{ background:#ca8a04; }}
-  .hbadge-green  {{ background:#16a34a; }}
-
-  /* ── タブ ── */
-  .tab-nav {{ display:flex;gap:0;background:#fff;border-bottom:2px solid #e2e8f0; }}
-  .tab-btn {{ padding:12px 28px;border:none;background:transparent;color:#64748b;font-size:14px;cursor:pointer;font-family:inherit;border-bottom:3px solid transparent;transition:all 0.2s;display:flex;align-items:center;gap:6px; }}
-  .tab-btn:hover {{ color:#1e3a8a;background:#f8fafc; }}
-  .tab-btn.active {{ color:#1e3a8a;border-bottom-color:#1e3a8a;font-weight:bold;background:#eff6ff; }}
-  .tab-content {{ display:none;padding:28px 32px; }}
-  .tab-content.active {{ display:block; }}
-
-  /* ── タブ1 ── */
-  .tab1-heading {{ font-size:17px;font-weight:bold;color:#1e293b;margin-bottom:20px;padding-left:12px;border-left:4px solid #1e3a8a; }}
-  .section-label {{ display:inline-flex;align-items:center;gap:8px;padding:5px 16px;border-radius:20px;font-size:14px;font-weight:bold;color:#fff;margin-bottom:12px; }}
-  .section-label-red    {{ background:#ef4444; }}
-  .section-label-orange {{ background:#f97316; }}
-  .section-count {{ font-size:13px;font-weight:normal;margin-left:2px; }}
-
-  /* ── テーブル共通 ── */
-  .ticket-table {{ width:100%;border-collapse:collapse;margin-bottom:28px;font-size:13px;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08); }}
-  .ticket-table th {{ padding:10px 14px;text-align:left;color:#374151;font-weight:600;border-bottom:1px solid #e2e8f0; }}
-  .today-table th    {{ background:#fff1f2; }}
-  .tomorrow-table th {{ background:#fff7ed; }}
-  .inner-table th    {{ background:#f8fafc; }}
-  .ticket-table td {{ padding:9px 14px;border-bottom:1px solid #f1f5f9;color:#374151; }}
-  .ticket-table tr:last-child td {{ border-bottom:none; }}
-  .ticket-table tr:hover td {{ background:#f8fafc; }}
-  .due-today    {{ color:#ef4444;font-weight:bold; }}
-  .due-tomorrow {{ color:#f97316;font-weight:bold; }}
-  .empty-msg {{ text-align:center;color:#94a3b8;padding:24px;font-size:15px;margin-bottom:24px;background:#fff;border-radius:8px; }}
-
-  /* ── タブ2 ── */
-  .tab2-heading {{ font-size:17px;font-weight:bold;color:#1e293b;margin-bottom:16px;padding-left:12px;border-left:4px solid #1e3a8a; }}
-  .filter-bar {{ display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center; }}
-  .filter-btn {{ padding:6px 18px;border:1px solid #e2e8f0;background:#fff;color:#64748b;border-radius:20px;cursor:pointer;font-size:13px;font-family:inherit;transition:all 0.2s;display:flex;align-items:center;gap:5px; }}
-  .filter-btn:hover {{ background:#f1f5f9; }}
-  .filter-btn.active {{ background:#1e3a8a;border-color:#1e3a8a;color:#fff;font-weight:bold; }}
-  .filter-dot {{ width:10px;height:10px;border-radius:50%;display:inline-block; }}
-  .member-count-text {{ font-size:13px;color:#64748b;margin-bottom:12px; }}
-
-  .accordion-card {{ background:#fff;border-radius:8px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.08); }}
-  .accordion-header {{ padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap; }}
-  .accordion-header:hover {{ background:#f8fafc; }}
-  .signal-dot {{ width:10px;height:10px;border-radius:50%;flex-shrink:0; }}
-  .signal-label {{ font-size:13px;font-weight:bold;flex-shrink:0; }}
-  .member-name {{ font-weight:bold;font-size:15px;color:#1e293b;flex-shrink:0; }}
-  .total-count {{ font-size:13px;color:#64748b;flex-shrink:0; }}
-  .count-badge {{ padding:2px 8px;border-radius:10px;font-size:11px;font-weight:bold; }}
-  .overdue-badge {{ background:#fee2e2;color:#ef4444; }}
-  .today-badge   {{ background:#ffedd5;color:#f97316; }}
-  .soon-badge    {{ background:#dbeafe;color:#2563eb; }}
-  .ok-badge      {{ background:#f1f5f9;color:#64748b; }}
-  .chevron {{ color:#94a3b8;margin-left:auto;transition:transform 0.2s;flex-shrink:0; }}
-  .chevron.open {{ transform:rotate(180deg); }}
-  .accordion-body {{ padding:0 16px 16px;border-top:1px solid #f1f5f9; }}
-
-  /* ── タブ3 ── */
-  .tab3-heading {{ font-size:17px;font-weight:bold;color:#1e293b;margin-bottom:6px;padding-left:12px;border-left:4px solid #1e3a8a; }}
-  .tab3-subtext {{ font-size:13px;color:#64748b;margin-bottom:16px; }}
-  .chart-container {{ background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08); }}
-
-  /* ── フッター ── */
-  .page-footer {{ text-align:right;color:#64748b;font-size:12px;padding:20px 32px 28px; }}
-</style>
-</head>
-<body>
-
-<!-- ヘッダー -->
-<div class="page-header">
-  <div class="page-title">🏢 Land CS チーム タスクダッシュボード</div>
-  <div class="page-subtitle">{today_str_ja} — 全{summary['total_members']}名 / {summary['total_tickets']}件のタスク</div>
-  <div class="header-badges">
-    <span class="hbadge hbadge-red">期限切れ {summary['overdue']}件</span>
-    <span class="hbadge hbadge-orange">今日〆切 {summary['today']}件</span>
-    <span class="hbadge hbadge-yellow">5日以内 {summary['soon']}件</span>
-    <span class="hbadge hbadge-green">全{summary['total_members']}名・{summary['total_tickets']}件</span>
-  </div>
-</div>
-
-<!-- タブナビ -->
-<div class="tab-nav">
-  <button class="tab-btn active" onclick="switchTab('tab1',this)">⚡ 今日・明日〆切</button>
-  <button class="tab-btn" onclick="switchTab('tab2',this)">👥 メンバー別タスク</button>
-  <button class="tab-btn" onclick="switchTab('tab3',this)">📊 ワークロード</button>
-</div>
-
-<!-- タブ1: 今日・明日〆切 -->
-<div id="tab1" class="tab-content active">
-  <div class="tab1-heading">⚡ 今日・明日〆切タスク</div>
-  <div style="margin-bottom:8px;">
-    <span class="section-label section-label-red">🔴 今日〆切<span class="section-count">{today_count}件</span></span>
-  </div>
-  {today_section}
-  <div style="margin-bottom:8px;">
-    <span class="section-label section-label-orange">🟠 明日〆切<span class="section-count">{tomorrow_count}件</span></span>
-  </div>
-  {tomorrow_section}
-</div>
-
-<!-- タブ2: メンバー別タスク -->
-<div id="tab2" class="tab-content">
-  <div class="tab2-heading">👥 メンバー別タスク一覧</div>
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterMembers('all',this)">全員</button>
-    <button class="filter-btn" onclick="filterMembers('red',this)"><span class="filter-dot" style="background:#ef4444;"></span>緊急</button>
-    <button class="filter-btn" onclick="filterMembers('yellow',this)"><span class="filter-dot" style="background:#eab308;"></span>注意</button>
-    <button class="filter-btn" onclick="filterMembers('green',this)"><span class="filter-dot" style="background:#22c55e;"></span>順調</button>
-  </div>
-  <div class="member-count-text" id="member-count-text">{total_members}名を表示中（全{total_members}名）</div>
-  <div id="accordion-list">{accordion_cards}</div>
-</div>
-
-<!-- タブ3: ワークロード -->
-<div id="tab3" class="tab-content">
-  <div class="tab3-heading">📊 メンバー別ワークロード（積み上げ横棒グラフ）</div>
-  <div class="tab3-subtext">タスク数の多い順に並べています。</div>
-  <div class="chart-container">
-    <canvas id="workloadChart" height="{chart_height}"></canvas>
-  </div>
-</div>
-
-<div class="page-footer">※ データはBacklog「{PROJECT_KEY}」プロジェクトから取得（{summary['generated_at']}時点）。</div>
-
-<script>
-  function switchTab(tabId, btn) {{
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    btn.classList.add('active');
-  }}
-  function toggleAccordion(header) {{
-    const body = header.nextElementSibling;
-    const chevron = header.querySelector('.chevron');
-    const isOpen = body.style.display !== 'none';
-    body.style.display = isOpen ? 'none' : 'block';
-    chevron.classList.toggle('open', !isOpen);
-  }}
-  function filterMembers(signal, btn) {{
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    let visible = 0;
-    const total = document.querySelectorAll('.accordion-card').length;
-    document.querySelectorAll('.accordion-card').forEach(card => {{
-      const show = (signal === 'all' || card.dataset.signal === signal);
-      card.style.display = show ? 'block' : 'none';
-      if (show) visible++;
-    }});
-    document.getElementById('member-count-text').textContent =
-      visible + '名を表示中（全' + total + '名）';
-  }}
-
-  // Chart.js ワークロードグラフ
-  const ctx = document.getElementById('workloadChart').getContext('2d');
-  new Chart(ctx, {{
-    type: 'bar',
-    data: {{
-      labels: {chart_labels_js},
-      datasets: [
-        {{ label: '5日以内',  data: {chart_soon_js},    backgroundColor: '#ca8a04' }},
-        {{ label: '6日以上',  data: {chart_ok_js},      backgroundColor: '#16a34a' }},
-        {{ label: '今日〆切', data: {chart_today_js},   backgroundColor: '#f97316' }},
-        {{ label: '期限切れ', data: {chart_overdue_js}, backgroundColor: '#dc2626' }},
-      ],
-    }},
-    options: {{
-      indexAxis: 'y',
-      responsive: true,
-      plugins: {{
-        legend: {{
-          position: 'top',
-          align: 'start',
-          labels: {{ boxWidth: 14, color: '#374151', padding: 16 }}
-        }},
-        tooltip: {{
-          callbacks: {{
-            title: (items) => items[0].label,
-            label: () => null,
-            afterBody: (items) => {{
-              const idx = items[0].dataIndex;
-              const ds  = items[0].chart.data.datasets;
-              // datasets順: 5日以内[0], 6日以上[1], 今日〆切[2], 期限切れ[3]
-              return [
-                '期限切れ: ' + ds[3].data[idx] + '件',
-                '今日〆切: ' + ds[2].data[idx] + '件',
-                '5日以内: '  + ds[0].data[idx] + '件',
-                '6日以上: '  + ds[1].data[idx] + '件',
-              ];
-            }},
-          }},
-          backgroundColor: '#fff',
-          titleColor: '#1e293b',
-          bodyColor: '#374151',
-          borderColor: '#e2e8f0',
-          borderWidth: 1,
-          padding: 12,
-        }},
-      }},
-      scales: {{
-        x: {{ stacked: true, position: 'top', ticks: {{ color: '#64748b' }}, grid: {{ color: '#f1f5f9' }} }},
-        y: {{ stacked: true, ticks: {{ color: '#374151' }}, grid: {{ display: false }} }},
-      }},
-    }},
-  }});
-</script>
 </body></html>"""
 
 # ─────────────────────────────────────────
@@ -758,13 +394,7 @@ def main() -> None:
     except Exception as e:
         print(f"⚠️ Slack画像投稿エラー: {e}")
 
-    # 5. ダッシュボードHTML生成
-    dashboard_html = generate_dashboard_html(results, summary)
-    with open("dashboard.html", "w", encoding="utf-8") as f:
-        f.write(dashboard_html)
-    print("ダッシュボードHTML生成完了: dashboard.html")
-
-    # 6. ログ出力
+    # 5. ログ出力
     print(f"\n📝 生成日時: {summary['generated_at']}")
     print(f"期限切れ: {summary['overdue']}件 / 今日: {summary['today']}件 / 5日以内: {summary['soon']}件")
     print("✅ 処理完了")
