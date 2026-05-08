@@ -14,8 +14,7 @@ import json
 import urllib.request
 import urllib.parse
 import tempfile
-import subprocess
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from zoneinfo import ZoneInfo
 
 # ─────────────────────────────────────────
@@ -39,25 +38,9 @@ CAUTION_COUNT = 3
 # S3 から issues.json を取得
 # ─────────────────────────────────────────
 
-# ─────────────────────────────────────────
-# テスト用ダミーデータ（S3が403の場合のフォールバック）
-# ─────────────────────────────────────────
-FALLBACK_ISSUES = [
-    {"summary": "【テスト】LP制作対応",        "assignee": {"name": "田中 太郎"}, "dueDate": None,         "status": {"name": "未着手"}},
-    {"summary": "【テスト】バナー修正依頼",      "assignee": {"name": "田中 太郎"}, "dueDate": "2026-05-03", "status": {"name": "処理中"}},
-    {"summary": "【テスト】原稿チェック",        "assignee": {"name": "鈴木 花子"}, "dueDate": "2026-05-04", "status": {"name": "未着手"}},
-    {"summary": "【テスト】入稿データ確認",      "assignee": {"name": "鈴木 花子"}, "dueDate": "2026-05-07", "status": {"name": "処理中"}},
-    {"summary": "【テスト】クライアント確認",    "assignee": {"name": "佐藤 次郎"}, "dueDate": "2026-04-30", "status": {"name": "処理中"}},
-    {"summary": "【テスト】修正対応",            "assignee": {"name": "佐藤 次郎"}, "dueDate": "2026-05-03", "status": {"name": "未着手"}},
-    {"summary": "【テスト】素材整理",            "assignee": {"name": "山田 三郎"}, "dueDate": "2026-05-08", "status": {"name": "未着手"}},
-    {"summary": "【テスト】スケジュール調整",    "assignee": {"name": "山田 三郎"}, "dueDate": "2026-05-10", "status": {"name": "処理中"}},
-    {"summary": "【テスト】レポート作成",        "assignee": {"name": "伊藤 四郎"}, "dueDate": "2026-05-05", "status": {"name": "未着手"}},
-    {"summary": "【テスト】ミーティング準備",    "assignee": {"name": "伊藤 四郎"}, "dueDate": "2026-05-06", "status": {"name": "処理中"}},
-]
-
 def fetch_issues() -> list:
     """S3に配置された issues.json を取得して返す。
-    403エラーの場合はテスト用ダミーデータを使用する。
+    取得失敗時はエラーを raise して処理を中断する。
     """
     try:
         with urllib.request.urlopen(ISSUES_JSON_URL) as resp:
@@ -65,14 +48,8 @@ def fetch_issues() -> list:
         print(f"✅ issues.json 取得完了: {len(issues)} 件")
         return issues
     except Exception as e:
-        error_msg = str(e)
-        if "403" in error_msg or "Forbidden" in error_msg:
-            print(f"⚠️ S3アクセス制限（403）のため、テスト用ダミーデータを使用します")
-            print(f"   エラー詳細: {error_msg}")
-            print(f"   ダミーデータ件数: {len(FALLBACK_ISSUES)} 件")
-            return FALLBACK_ISSUES
-        else:
-            raise RuntimeError(f"issues.json の取得に失敗しました: {e}")
+        raise RuntimeError(f"issues.json の取得に失敗しました: {e}")
+
 
 def classify_issue(due_date) -> str:
     """期限日から状態を分類する"""
@@ -243,6 +220,16 @@ def generate_slack_html(results: list, summary: dict) -> str:
         member_section("🟢", "順調メンバー（期限タスク1件以上・緊急/注意以外）", green_members)
     )
 
+    dashboard_link = ""
+    if DASHBOARD_URL:
+        dashboard_link = f"""
+  <!-- フッター -->
+  <div style="border-top:1px solid #2d3748;padding-top:14px;font-size:12px;color:#718096;">
+    詳細はこちら →
+    <span style="color:#63b3ed;text-decoration:underline;">{DASHBOARD_URL}</span>
+    <span style="margin-left:16px;color:#4a5568;">PROJECT: {PROJECT_KEY}</span>
+  </div>"""
+
     return f"""<!DOCTYPE html>
 <html lang="ja"><head><meta charset="UTF-8">
 <style>
@@ -252,29 +239,29 @@ def generate_slack_html(results: list, summary: dict) -> str:
 
   <!-- ヘッダー -->
   <div style="background:#16213e;border-radius:12px;border-left:4px solid #f1c40f;padding:16px 20px;margin-bottom:20px;">
-    <div style="font-size:20px;font-weight:800;color:#ffffff;margin-bottom:6px;">⚠ 今日・5日以内の〆切タスク確認</div>
-    <div style="font-size:13px;color:#a0aec0;">🗂 Land CS チーム　📅 {today_str} 朝 8:00</div>
+    <div style="font-size:20px;font-weight:800;color:#ffffff;margin-bottom:6px;">&#9888; 今日・5日以内の〆切タスク確認</div>
+    <div style="font-size:13px;color:#a0aec0;">Land CS チーム　{today_str} 朝 8:00</div>
   </div>
 
   <!-- サマリーカード -->
   <div style="display:flex;gap:12px;margin-bottom:24px;">
     <div style="background:#16213e;border-radius:14px;border-left:4px solid #e74c3c;padding:18px 20px;flex:1;">
-      <div style="font-size:22px;margin-bottom:6px;">🚨</div>
+      <div style="font-size:22px;margin-bottom:6px;">&#128680;</div>
       <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">期限切れ</div>
       <div style="font-size:32px;font-weight:800;color:#e74c3c;">{summary['overdue']}</div>
     </div>
     <div style="background:#16213e;border-radius:14px;border-left:4px solid #e74c3c;padding:18px 20px;flex:1;">
-      <div style="font-size:22px;margin-bottom:6px;">🔴</div>
+      <div style="font-size:22px;margin-bottom:6px;">&#128308;</div>
       <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">今日〆切</div>
       <div style="font-size:32px;font-weight:800;color:#e74c3c;">{summary['today']}</div>
     </div>
     <div style="background:#16213e;border-radius:14px;border-left:4px solid #718096;padding:18px 20px;flex:1;">
-      <div style="font-size:22px;margin-bottom:6px;">🟡</div>
+      <div style="font-size:22px;margin-bottom:6px;">&#128993;</div>
       <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">5日以内</div>
       <div style="font-size:32px;font-weight:800;color:#e2e8f0;">{summary['soon']}</div>
     </div>
     <div style="background:#16213e;border-radius:14px;border-left:4px solid #718096;padding:18px 20px;flex:1;">
-      <div style="font-size:22px;margin-bottom:6px;">👥</div>
+      <div style="font-size:22px;margin-bottom:6px;">&#128101;</div>
       <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;">担当者数</div>
       <div style="font-size:32px;font-weight:800;color:#e2e8f0;">{summary['members']}</div>
     </div>
@@ -283,7 +270,7 @@ def generate_slack_html(results: list, summary: dict) -> str:
   <!-- メンバーセクション -->
   {sections}
 
-  <!-- フッター -->
+  {dashboard_link}
 </body></html>"""
 
 # ─────────────────────────────────────────
@@ -362,7 +349,7 @@ def post_image_to_slack(image_path: str, title: str, initial_comment: str) -> No
 def main() -> None:
     print("🚀 タスクアラートスクリプト開始")
 
-    # 1. S3から issues.json を取得
+    # 1. S3から issues.json を取得（失敗時はエラー終了）
     issues = fetch_issues()
     print(f"取得チケット数: {len(issues)} 件")
 
@@ -389,10 +376,12 @@ def main() -> None:
                 f"🟠 今日〆切: {summary['today']}件　"
                 f"🟡 5日以内: {summary['soon']}件　"
                 f"👥 対象: {summary['members']}名\n"
-                f"📊 詳細ダッシュボード: {DASHBOARD_URL}")
+                + (f"📊 詳細ダッシュボード: {DASHBOARD_URL}" if DASHBOARD_URL else "")
+            )
         )
     except Exception as e:
         print(f"⚠️ Slack画像投稿エラー: {e}")
+        raise
 
     # 5. ログ出力
     print(f"\n📝 生成日時: {summary['generated_at']}")
