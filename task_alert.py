@@ -628,7 +628,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
   legend: {{
     position: 'top',
     align: 'start',
-    reverse: true,   # ← これを追加！
+    reverse: true,
     labels: {{ boxWidth: 14, color: '#374151', padding: 16 }}
   }},
         tooltip: {{
