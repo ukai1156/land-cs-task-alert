@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>チームタスク・案件 進捗確認フロー 設計ドキュメント</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #f9f9f9;
+      font-family: Arial, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", メイリオ, Meiryo, sans-serif;
+      min-height: 100vh;
+      padding: 32px 16px 48px;
+      color: #303030;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* Header */
+    .page-header {
+      background: #0c419a;
+      border-radius: 8px;
+      padding: 32px 36px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0px 2px 4px 0px rgba(0,0,0,.25);
+    }
+    .page-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .page-header p {
+      font-size: 16px;
+      color: #c8d8f8;
+      margin-bottom: 14px;
+    }
+    .page-header .meta {
+      font-size: 13px;
+      color: #a0bce8;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: #ffffff;
+      border: 1px solid #dfe4f0;
+      border-radius: 8px;
+      box-shadow: 0px 2px 4px 0px rgba(0,0,0,.25);
+      margin-bottom: 20px;
+      padding: 24px 28px;
+      font-size: 15px;
+    }
+    .section-heading {
+      font-size: 18px;
+      font-weight: 700;
+      color: #101010;
+      border-left: 4px solid #3569c0;
+      padding-left: 12px;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    /* Tables */
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+    th, td {
+      border: 1px solid #dfe4f0;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #303030;
+      text-align: left;
+      vertical-align: top;
+    }
+    thead th {
+      background: #eef1f8;
+      font-weight: 700;
+      color: #101010;
+    }
+    tbody tr:nth-child(even) td { background: #f5f7fc; }
+    tbody tr:nth-child(odd) td { background: #ffffff; }
+
+    /* Sub heading */
+    .sub-heading {
+      font-size: 15px;
+      font-weight: 700;
+      color: #101010;
+      margin-bottom: 10px;
+    }
+
+    /* Issue Card */
+    .issue-card {
+      background: #fff8f0;
+      border-left: 4px solid #f5a623;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #303030;
+    }
+
+    /* Key Insight */
+    .key-insight {
+      background: #eef1f8;
+      border-left: 4px solid #3569c0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 16px;
+      font-size: 15px;
+      color: #101010;
+      font-weight: 700;
+    }
+
+    /* Conclusion */
+    .conclusion {
+      background: #eef6ff;
+      border: 1.5px solid #3569c0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 16px;
+      font-size: 15px;
+      color: #303030;
+    }
+    .conclusion strong { color: #3569c0; }
+
+    /* Checklist */
+    .checklist {
+      background: #f0fff4;
+      border: 1px solid #c6f6d5;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 8px;
+    }
+    .checklist-item {
+      font-size: 15px;
+      color: #303030;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .checklist-item:last-child { margin-bottom: 0; }
+
+    /* MVP Grid */
+    .mvp-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .mvp-item {
+      background: #eef1f8;
+      border: 1px solid #dfe4f0;
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .mvp-icon { font-size: 22px; margin-bottom: 6px; }
+    .mvp-title { font-size: 14px; font-weight: 700; color: #3569c0; margin-bottom: 4px; }
+    .mvp-desc { font-size: 14px; color: #303030; }
+
+    /* Flow Diagram */
+    .flow-diagram {
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .flow-inner {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-width: 860px;
+      flex-wrap: nowrap;
+    }
+    .flow-node {
+      border: 1.5px solid #dfe4f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: center;
+      min-width: 130px;
+    }
+    .flow-node-icon { font-size: 24px; margin-bottom: 6px; }
+    .flow-node-label { font-size: 13px; color: #303030; white-space: pre-line; line-height: 1.5; }
+    .flow-arrow { font-size: 22px; color: #3569c0; padding: 0 6px; flex-shrink: 0; }
+    .flow-outputs { display: flex; flex-direction: column; gap: 10px; }
+    .flow-output-row { display: flex; align-items: center; gap: 0; }
+    .flow-output-node {
+      border: 1.5px solid #dfe4f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-align: center;
+      min-width: 160px;
+    }
+    .flow-output-icon { font-size: 22px; margin-bottom: 5px; }
+
+    /* List */
+    ol, ul { padding-left: 20px; }
+    li { margin-bottom: 8px; font-size: 15px; color: #303030; }
+
+    /* Status rows */
+    .status-done { color: #38a169; font-weight: 700; }
+
+    /* Footer */
+    .page-footer {
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+      padding: 12px 0 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <h1>📋 チームタスク・案件 進捗確認フロー 設計ドキュメント</h1>
+    <p>アイデアを企画に変える 4STEPによる整理</p>
+    <div class="meta">
+      <span>作成日：2026年4月26日</span>
+      <span>👥 チーム規模：30名</span>
+      <span>🔧 メインツール：Backlog / Slack</span>
+    </div>
+  </div>
+
+  <!-- SECTION 0 -->
+  <div class="section-card">
+    <h2 class="section-heading">SECTION 0：ヒアリング内容の整理（現状フロー）</h2>
+
+    <p class="sub-heading">■ 基本情報</p>
+    <table>
+      <thead><tr><th style="width:30%">項目</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>進捗確認の形式</td><td>定例ミーティング ＋ Backlogへの記入</td></tr>
+        <tr><td>主なツール</td><td>Backlog</td></tr>
+        <tr><td>チーム規模</td><td>30名利用、1タスクあたり関係者5名前後</td></tr>
+        <tr><td>Backlog更新</td><td>各担当者が随時更新、進捗会直前に必須更新</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sub-heading">■ 定例ミーティングの詳細</p>
+    <table>
+      <thead>
+        <tr><th>種別</th><th>頻度</th><th>参加者</th><th>時間</th><th>内容</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>短期タスク（2〜3ヶ月）</td>
+          <td>週1回</td><td>チーム全員</td><td>約1時間</td>
+          <td>Backlogチケットを見ながら進行</td>
+        </tr>
+        <tr>
+          <td>長期プロジェクト（1〜2年）</td>
+          <td>月1回</td><td>チーム全員</td><td>約1時間</td>
+          <td>同上</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="sub-heading">■ ミーティング後のアクション</p>
+    <ul style="margin-bottom:20px">
+      <li>期限再設定チケットをBacklogで更新</li>
+      <li>出席者：口頭でその場でアクション伝達</li>
+      <li>欠席者：Slackで個別連絡 または Backlogチケットにコメント記載</li>
+    </ul>
+
+    <p class="sub-heading">■ 現状の課題</p>
+    <div class="issue-card"><strong>課題1：</strong>期限切れチケットが多く、進捗会の時間が足りなくなる</div>
+    <div class="issue-card"><strong>課題2：</strong>担当者の更新漏れにより、ミーティング中に初めて状況がわかる</div>
+    <div class="issue-card"><strong>課題3：</strong>タスクを主語とした確認のみで、人を主語にしたワークロード確認（特定の人へのタスク集中・オーバーフロー）ができていない</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="section-card">
+    <h2 class="section-heading">STEP 1：課題の分解（アンラーニング）</h2>
+    <p style="margin-bottom:16px">チームの進捗確認フローを最初から最後までヒアリングし、現状フローの棚卸しと課題の明確化を実施</p>
+    <p class="sub-heading">特定した課題：</p>
+    <ol>
+      <li>期限切れチケットが多く、進捗会の時間が足りなくなる</li>
+      <li>担当者の更新漏れにより、ミーティング中に初めて状況がわかる</li>
+      <li>タスクを主語とした確認のみで、人を主語にしたワークロード確認（特定の人へのタスク集中・オーバーフロー）ができていない</li>
+    </ol>
+    <div class="key-insight">💡 KEY INSIGHT：「タスク主語」から「人主語」への視点転換が必要</div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="section-card">
+    <h2 class="section-heading">STEP 2：意味の見極め（コスト削減・自社最適化）</h2>
+
+    <p class="sub-heading">■ Backlog標準機能でできること</p>
+    <table>
+      <thead><tr><th style="width:30%">機能</th><th>内容</th></tr></thead>
+      <tbody>
+        <tr><td>ガントチャート</td><td>タスクの期間・担当者を視覚的に確認</td></tr>
+        <tr><td>カンバンボード</td><td>ステータス別タスク管理</td></tr>
+        <tr><td>バーンダウンチャート</td><td>マイルストーンに対する進捗確認（Standardプラン以上）</td></tr>
+        <tr><td>担当者表示</td><td>誰がどのタスクを持っているかガントチャート上で確認可能</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sub-heading">■ Backlog標準機能でできないこと（自作ツールの意義）</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:24%">課題</th>
+          <th style="width:38%">Backlog標準機能</th>
+          <th style="width:38%">自作ツールで解決</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>①ワークロード可視化（人単位でのタスク集中検知）</td>
+          <td>❌ 担当者ごとの負荷を数値・グラフで一覧表示する機能なし</td>
+          <td>✅ 担当者別オープン数・期限切れ数を自動集計・グラフ化</td>
+        </tr>
+        <tr>
+          <td>②レポート自動生成（進捗会前後のサマリー）</td>
+          <td>❌ 自動でサマリーをSlackに投稿する機能なし</td>
+          <td>✅ 定時にSlackへ自動投稿</td>
+        </tr>
+        <tr>
+          <td>③更新漏れ防止（自動リマインド）</td>
+          <td>❌ チケット未更新者への自動通知機能なし</td>
+          <td>✅ 未更新チケットの担当者へSlack自動リマインド</td>
+        </tr>
+        <tr>
+          <td>④時間コスト削減</td>
+          <td>❌ 進捗会アジェンダ自動生成なし</td>
+          <td>✅ ①〜③が揃うことで自然に実現</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="conclusion">
+      <strong>結論：</strong>Backlogは『タスクを管理する』ツールとして優秀だが、『人を主語にしたワークロード管理』『自動通知・レポート』は標準機能の範囲外。ここが自作ツールで解決できる価値。
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="section-card">
+    <h2 class="section-heading">STEP 3：MVPを定義する</h2>
+
+    <p class="sub-heading">■ 自動化の優先ロードマップ</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:10%">優先順位</th>
+          <th style="width:20%">機能</th>
+          <th style="width:35%">MVP（最小限）</th>
+          <th style="width:35%">フル機能（将来）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🥇 1位</td>
+          <td>ワークロード可視化</td>
+          <td>人ごとのオープンチケット数・期限切れ数を一覧表示</td>
+          <td>タスク工数・難易度加味した負荷スコア算出</td>
+        </tr>
+        <tr>
+          <td>🥈 2位</td>
+          <td>レポート自動生成</td>
+          <td>進捗会前後のチケット状況サマリーをSlackに自動投稿</td>
+          <td>進捗会後のアクションログも自動記録</td>
+        </tr>
+        <tr>
+          <td>🥉 3位</td>
+          <td>更新漏れ防止</td>
+          <td>進捗会前日にBacklog未更新チケットの担当者へSlackリマインド</td>
+          <td>更新頻度の低いチケットを自動検知</td>
+        </tr>
+        <tr>
+          <td>4位</td>
+          <td>時間コスト削減</td>
+          <td>上記1〜3が揃うことで自然に実現</td>
+          <td>進捗会のアジェンダ自動生成</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="sub-heading">■ 最初のMVP仕様</p>
+    <div class="mvp-grid">
+      <div class="mvp-item">
+        <div class="mvp-icon">🔌</div>
+        <div class="mvp-title">データソース</div>
+        <div class="mvp-desc">Backlog API（特定プロジェクト・完了以外のチケット）</div>
+      </div>
+      <div class="mvp-item">
+        <div class="mvp-icon">📊</div>
+        <div class="mvp-title">アウトプット①</div>
+        <div class="mvp-desc">Slackに一目でわかる画像を投稿</div>
+      </div>
+      <div class="mvp-item">
+        <div class="mvp-icon">🖥</div>
+        <div class="mvp-title">アウトプット②</div>
+        <div class="mvp-desc">WxHub/HTMLで詳細ダッシュボード確認</div>
+      </div>
+      <div class="mvp-item">
+        <div class="mvp-icon">👥</div>
+        <div class="mvp-title">対象</div>
+        <div class="mvp-desc">チーム30名（1タスクあたり関係者5名前後）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="section-card">
+    <h2 class="section-heading">STEP 4：PoCで検証する</h2>
+
+    <p class="sub-heading">■ PoCの実施フロー</p>
+    <ol style="margin-bottom:20px">
+      <li>Backlog APIからチケットデータを取得</li>
+      <li>人ごとにオープン・期限切れチケットを集計</li>
+      <li>ワークロード可視化グラフを画像として生成</li>
+      <li>Slackに画像を投稿（手動トリガーでまず確認）</li>
+      <li>Wxhubダッシュボードで詳細表示</li>
+    </ol>
+
+    <p class="sub-heading">■ PoC開始の前提条件チェックリスト（全て完了済み）</p>
+    <div class="checklist">
+      <div class="checklist-item"><span>✅</span><span>Backlog APIキーの発行（管理者へ依頼）</span></div>
+      <div class="checklist-item"><span>✅</span><span>対象プロジェクトの確定</span></div>
+      <div class="checklist-item"><span>✅</span><span>Slack Bot Tokenの取得・チャンネルへの招待</span></div>
+      <div class="checklist-item"><span>✅</span><span>ダミーデータでの動作確認</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section-card">
+    <h2 class="section-heading">SECTION 5：ネクストアクション</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:15%">ステータス</th>
+          <th>アクション</th>
+          <th style="width:25%">担当</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="status-done">✅ 完了</td>
+          <td class="status-done">STEP1：課題の分解（ヒアリング）</td>
+          <td class="status-done">鵜飼＋AI</td>
+        </tr>
+        <tr>
+          <td class="status-done">✅ 完了</td>
+          <td class="status-done">STEP2：意味の見極め（Backlog標準機能調査）</td>
+          <td class="status-done">鵜飼＋AI</td>
+        </tr>
+        <tr>
+          <td class="status-done">✅ 完了</td>
+          <td class="status-done">STEP3：MVPの定義</td>
+          <td class="status-done">鵜飼＋AI</td>
+        </tr>
+        <tr>
+          <td class="status-done">✅ 完了</td>
+          <td class="status-done">Backlog APIキーの発行依頼</td>
+          <td class="status-done">鵜飼→管理者</td>
+        </tr>
+        <tr>
+          <td class="status-done">✅ 完了</td>
+          <td class="status-done">STEP4：PoC実施（実データ接続）</td>
+          <td class="status-done">鵜飼＋AI</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section-card">
+    <h2 class="section-heading">SECTION 6：将来の完成形イメージ（システム構成図）</h2>
+    <div class="flow-diagram">
+      <div class="flow-inner">
+
+        <div class="flow-node" style="background:#eef6ff">
+          <div class="flow-node-icon">⏰</div>
+          <div class="flow-node-label">毎朝8:00（月〜金）</div>
+        </div>
+        <div class="flow-arrow">→</div>
+
+        <div class="flow-node" style="background:#eef1f8">
+          <div class="flow-node-icon">🗂</div>
+          <div class="flow-node-label">Backlog API
+チケットデータ取得</div>
+        </div>
+        <div class="flow-arrow">→</div>
+
+        <div class="flow-node" style="background:#eef1f8">
+          <div class="flow-node-icon">⚙</div>
+          <div class="flow-node-label">集計エンジン
+担当者別ワークロード算出
+期限切れ・更新漏れ検知</div>
+        </div>
+
+        <div class="flow-outputs">
+          <div class="flow-output-row">
+            <div class="flow-arrow">→</div>
+            <div class="flow-output-node" style="background:#eef6ff">
+              <div class="flow-output-icon">💬</div>
+              <div class="flow-node-label">Slack投稿
+画像サマリー自動送信</div>
+            </div>
+          </div>
+          <div class="flow-output-row">
+            <div class="flow-arrow">→</div>
+            <div class="flow-output-node" style="background:#eef6ff">
+              <div class="flow-output-icon">📊</div>
+              <div class="flow-node-label">Wxhubダッシュボード
+詳細ビュー更新</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" style="background:#eef1f8">
+          <div class="flow-node-icon">👥</div>
+          <div class="flow-node-label">進捗会
+Backlogの詳細確認は
+最小限に</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="page-footer">
+    チームタスク・案件 進捗確認フロー 設計ドキュメント　作成日：2026年4月26日
+  </div>
+
+</div>
+</body>
+</html>
