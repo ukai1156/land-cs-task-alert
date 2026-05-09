@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Land CS チーム タスクアラートシステム</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f9f9f9;
+    min-height: 100vh;
+    padding-bottom: 40px;
+    font-family: Arial, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", メイリオ, Meiryo, sans-serif;
+    color: #303030;
+  }
+  #global-header {
+    background: #0c419a;
+    padding: 28px 24px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  #global-header h1 { color: #fff; font-size: 22px; font-weight: bold; margin: 0 0 6px; }
+  #global-header p { color: #b8c8e8; font-size: 14px; margin: 0; }
+  #main-wrapper { max-width: 1070px; margin: 0 auto; padding: 0 16px; }
+  .section-card {
+    background: #ffffff;
+    border: 1px solid #dfe4f0;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,.25);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-card-inner { padding: 24px; }
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #101010;
+    border-left: 4px solid #3569c0;
+    padding-left: 12px;
+    margin: 0 0 16px;
+  }
+  .section-desc { font-size: 14px; color: #303030; margin-bottom: 16px; }
+  /* Slack Card */
+  .slack-card { background: #1a1a2e; border-radius: 12px; padding: 20px; }
+  .slack-header {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    border-left: 4px solid #d69e2e;
+  }
+  .slack-header-title { color: #ffd700; font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+  .slack-header-sub { color: #9aa5c4; font-size: 13px; }
+  .slack-summary { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+  .slack-summary-card {
+    background: #2a2a4a;
+    border-radius: 8px;
+    padding: 12px 16px;
+    flex: 1;
+    min-width: 120px;
+  }
+  .slack-summary-card .icon { font-size: 20px; margin-bottom: 4px; }
+  .slack-summary-card .label { font-size: 12px; color: #aab4cc; margin-bottom: 2px; }
+  .slack-summary-card .value { font-size: 24px; font-weight: bold; color: #ffffff; }
+  .slack-section-label { font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+  .slack-member-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .slack-member-card {
+    background: #2a2a4a;
+    border-radius: 6px;
+    padding: 8px 12px;
+  }
+  .slack-member-name { font-size: 13px; font-weight: bold; color: #e8eaf6; margin-bottom: 2px; }
+  .slack-member-detail { font-size: 11px; color: #9aa5c4; }
+  .slack-footer {
+    background: #16213e;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #9aa5c4;
+    margin-top: 16px;
+  }
+  .slack-footer a { color: #6b9fff; text-decoration: underline; cursor: pointer; }
+  /* Dashboard */
+  .dashboard-container {
+    background: #eef1f8;
+    border-radius: 8px;
+    border: 1px solid #dfe4f0;
+    overflow: hidden;
+  }
+  .dashboard-header { background: #0c419a; padding: 18px 20px; }
+  .dashboard-header h2 { color: #fff; font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+  .dashboard-header p { color: #b8c8e8; font-size: 13px; }
+  .summary-bar {
+    background: #0e367a;
+    padding: 12px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .summary-badge {
+    border-radius: 4px;
+    padding: 2px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+  }
+  .tab-row { display: flex; gap: 2px; padding: 12px 20px 0; background: #eef1f8; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 8px 16px;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid #dfe4f0;
+    background: #ffffff;
+    color: #303030;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .tab-btn.active { background: #0c419a; color: #ffffff; font-weight: bold; border-bottom: 2px solid transparent; }
+  .tab-content-area { background: #ffffff; padding: 20px; border-top: 2px solid #0c419a; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  /* Today Tab */
+  .today-title { font-size: 16px; font-weight: bold; color: #101010; margin-bottom: 6px; }
+  .today-desc { font-size: 13px; color: #303030; margin-bottom: 16px; }
+  .today-entry { margin-bottom: 10px; }
+  .today-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+  .today-name { font-size: 14px; font-weight: bold; color: #101010; }
+  .badge-overdue { background: #fee2e2; color: #e53e3e; border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: bold; }
+  .badge-today { background: #fffbeb; color: #92400e; border-radius: 4px; padding: 1px 7px; font-size: 11px; font-weight: bold; }
+  .today-task { font-size: 13px; color: #303030; padding: 5px 10px; background: #eef1f8; border-radius: 4px; margin-bottom: 3px; }
+  /* Members Tab */
+  .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .filter-btn {
+    background: #fff;
+    color: #303030;
+    border: 1px solid #dfe4f0;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .filter-btn.active { background: #3569c0; color: #fff; font-weight: bold; border-color: #3569c0; }
+  .show-count { font-size: 12px; color: #666; margin-bottom: 12px; }
+  .member-card {
+    background: #ffffff;
+    border: 1px solid #dfe4f0;
+    border-radius: 8px;
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,.25);
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .member-header-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: inherit;
+    text-align: left;
+  }
+  .member-header-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .member-name { font-size: 15px; font-weight: bold; color: #101010; }
+  .signal-label { font-size: 13px; font-weight: bold; }
+  .task-count { font-size: 13px; color: #303030; }
+  .badge-overdue2 { background: #fee2e2; color: #e53e3e; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: bold; }
+  .badge-today2 { background: #fff3cd; color: #856404; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: bold; }
+  .badge-within5 { background: #e8f0fe; color: #3569c0; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: bold; }
+  .badge-safe { background: #d1fae5; color: #38a169; border-radius: 4px; padding: 2px 8px; font-size: 12px; font-weight: bold; }
+  .chevron { font-size: 12px; color: #303030; }
+  .task-area { padding: 0 16px 12px; background: #eef1f8; display: none; }
+  .task-item { border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; }
+  .task-item-name { font-weight: bold; margin-bottom: 2px; font-size: 13px; }
+  .task-item-detail { font-size: 12px; font-weight: bold; }
+  /* Workload Tab */
+  .workload-title { font-size: 16px; font-weight: bold; color: #101010; margin-bottom: 6px; }
+  .workload-desc { font-size: 13px; color: #303030; margin-bottom: 12px; }
+  #workload-chart-container { height: 900px; position: relative; }
+</style>
+</head>
+<body>
+
+<div id="global-header">
+  <h1>Land CS チーム タスクアラートシステム</h1>
+  <p>実データ接続済み — BRAND エントリー / 2026/04/26 時点</p>
+</div>
+
+<div id="main-wrapper">
+
+  <!-- アウトプット① Slack投稿プレビュー -->
+  <div class="section-card">
+    <div class="section-card-inner">
+      <h2 class="section-title">アウトプット①：Slack投稿プレビュー</h2>
+      <p class="section-desc">Slackに自動投稿される内容のプレビューです。毎朝8:00（月〜金）に送信されます。</p>
+
+      <div class="slack-card">
+        <!-- Slack Header -->
+        <div class="slack-header">
+          <div class="slack-header-title">⚠ 今日・5日以内の〆切タスク確認</div>
+          <div class="slack-header-sub">🏢 Land CS チーム　📅 2026/04/28（Tue）朝 8:00</div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="slack-summary">
+          <div class="slack-summary-card" style="border-left:4px solid #e53e3e">
+            <div class="icon">🚨</div>
+            <div class="label">期限切れ</div>
+            <div class="value">26件</div>
+          </div>
+          <div class="slack-summary-card" style="border-left:4px solid #ff6b6b">
+            <div class="icon">🔴</div>
+            <div class="label">今日〆切</div>
+            <div class="value">6件</div>
+          </div>
+          <div class="slack-summary-card" style="border-left:4px solid #d69e2e">
+            <div class="icon">⏰</div>
+            <div class="label">5日以内</div>
+            <div class="value">29件</div>
+          </div>
+          <div class="slack-summary-card" style="border-left:4px solid #38a169">
+            <div class="icon">👥</div>
+            <div class="label">担当者数</div>
+            <div class="value">34名</div>
+          </div>
+        </div>
+
+        <!-- 緊急メンバー -->
+        <div style="border-left:4px solid #e53e3e; padding-left:12px; margin-bottom:16px;">
+          <div class="slack-section-label" style="color:#ff8080;">🔴 緊急メンバー（期限切れまたは今日〆切あり）</div>
+          <div class="slack-member-grid">
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 Miyuki Hirose</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 SHINDO Tetsuo</div><div class="slack-member-detail">今日2件・5日内2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 Shota Koizumi（koiz-s）</div><div class="slack-member-detail">期限切れ2件・5日内3件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 aramaki</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 hitoki</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 kasakou</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 katsumata</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 kida-s</div><div class="slack-member-detail">期限切れ2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 koshih</div><div class="slack-member-detail">期限切れ2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 okuda</div><div class="slack-member-detail">今日2件・5日内2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 ozawa</div><div class="slack-member-detail">今日1件・5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 stoshi</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 takaic</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 ukai</div><div class="slack-member-detail">期限切れ1件・今日1件・5日内2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 yam-ka</div><div class="slack-member-detail">期限切れ4件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 ぼちゃん</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 上島光雄</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 久能木百香</div><div class="slack-member-detail">期限切れ1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #e53e3e"><div class="slack-member-name">🔴 登太陽</div><div class="slack-member-detail">期限切れ5件</div></div>
+          </div>
+        </div>
+
+        <!-- 注意メンバー -->
+        <div style="border-left:4px solid #d69e2e; padding-left:12px; margin-bottom:16px;">
+          <div class="slack-section-label" style="color:#ffd700;">🟡 注意メンバー（5日以内3件以上）</div>
+          <div class="slack-member-grid">
+            <div class="slack-member-card" style="border-left:3px solid #d69e2e"><div class="slack-member-name">🟡 amayu</div><div class="slack-member-detail">5日内3件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #d69e2e"><div class="slack-member-name">🟡 moriguchi</div><div class="slack-member-detail">5日内4件</div></div>
+          </div>
+        </div>
+
+        <!-- 順調メンバー -->
+        <div style="border-left:4px solid #38a169; padding-left:12px; margin-bottom:0;">
+          <div class="slack-section-label" style="color:#6bff9e;">🟢 順調メンバー（期限タスク1件以上・緊急/注意以外）</div>
+          <div class="slack-member-grid">
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 Mika KAMATA</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 Miku Kanazawa</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 Nakanishi Mikako（na-mik）</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 anaz-k</div><div class="slack-member-detail">5日内2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 gaito</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 hattori</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 ikedam</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 itoi</div><div class="slack-member-detail">5日内2件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 kane-h</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 kitazy</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 sasaer</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 yogawa</div><div class="slack-member-detail">5日内1件</div></div>
+            <div class="slack-member-card" style="border-left:3px solid #38a169"><div class="slack-member-name">🟢 大波多（中森）美奈</div><div class="slack-member-detail">5日内1件</div></div>
+          </div>
+        </div>
+
+        <!-- Slack Footer -->
+        <div class="slack-footer">📊 詳細はこちら → <a onclick="document.getElementById('dashboard-section').scrollIntoView({behavior:'smooth'})">詳細ダッシュボード</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- アウトプット② 詳細ダッシュボード -->
+  <div class="section-card" id="dashboard-section">
+    <div class="section-card-inner">
+      <h2 class="section-title">アウトプット②：詳細ダッシュボード</h2>
+      <p class="section-desc">Slackの投稿から遷移する詳細確認画面です。タブ切り替えで各種情報を確認できます。</p>
+
+      <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+          <h2>📊 Land CS チーム タスクダッシュボード</h2>
+          <p>2026/04/28（Tue）— 全34名 / 77件のタスク</p>
+        </div>
+
+        <!-- Summary Bar -->
+        <div class="summary-bar">
+          <span class="summary-badge" style="background:#e53e3e;">期限切れ 26件</span>
+          <span class="summary-badge" style="background:#ff8080;">今日〆切 6件</span>
+          <span class="summary-badge" style="background:#d69e2e;">5日以内 29件</span>
+          <span class="summary-badge" style="background:#38a169;">全34名・77件</span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-row">
+          <button class="tab-btn" id="tab-today" onclick="switchTab('today')">⚡ 今日・明日〆切</button>
+          <button class="tab-btn active" id="tab-members" onclick="switchTab('members')">👥 メンバー別タスク</button>
+          <button class="tab-btn" id="tab-workload" onclick="switchTab('workload')">📊 ワークロード</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content-area">
+
+          <!-- Tab: Today -->
+          <div class="tab-panel" id="content-today">
+            <div class="today-title">⚡ 今日〆切・期限切れタスク一覧</div>
+            <div class="today-desc">今日が期限、または期限が過ぎているタスクを担当者別に表示しています。</div>
+            <div id="today-list"></div>
+          </div>
+
+          <!-- Tab: Members -->
+          <div class="tab-panel active" id="content-members">
+            <div class="today-title" style="margin-bottom:12px;">👥 メンバー別タスク一覧</div>
+            <div class="filter-row">
+              <button class="filter-btn active" id="filter-all" onclick="filterMembers('all')">全員</button>
+              <button class="filter-btn" id="filter-red" onclick="filterMembers('red')">🔴 緊急</button>
+              <button class="filter-btn" id="filter-yellow" onclick="filterMembers('yellow')">🟡 注意</button>
+              <button class="filter-btn" id="filter-green" onclick="filterMembers('green')">🟢 順調</button>
+            </div>
+            <div class="show-count" id="show-count">34名を表示中（全34名）</div>
+            <div id="members-list"></div>
+          </div>
+
+          <!-- Tab: Workload -->
+          <div class="tab-panel" id="content-workload">
+            <div class="workload-title">📊 メンバー別ワークロード（積み上げ横棒グラフ）</div>
+            <div class="workload-desc">タスク数の多い順に並べています。</div>
+            <div id="workload-chart-container">
+              <canvas id="workloadChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MEMBERS = [
+  { name: "Mika KAMATA", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 新気象・防災サイト 追加改修および防災情報の体系整理対応＋プッシュ通知追加分", status: "safe", detail: "30日後〆切" }] },
+  { name: "Miku Kanazawa", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "【ABCL】受注エントリー：おは祝2026年4月", status: "within5", detail: "2日後〆切" }] },
+  { name: "Miyuki Hirose", signal: "red", overdue: 1, today: 0, within5: 0, total: 2,
+    tasks: [
+      { label: "【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 新気象・防災サイト 追加改修および防災情報の体系整理対応", status: "overdue", detail: "期限切れ（14日前）" },
+      { label: "【ABCL】受注エントリー：おは祝2026年5月", status: "safe", detail: "32日後〆切" }
+    ]},
+  { name: "Nakanishi Mikako（na-mik）", signal: "green", overdue: 0, today: 0, within5: 1, total: 3,
+    tasks: [
+      { label: "【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 A", status: "within5", detail: "4日後〆切" },
+      { label: "【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 B", status: "safe", detail: "230日後〆切" },
+      { label: "【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 C", status: "safe", detail: "360日後〆切" }
+    ]},
+  { name: "SHINDO Tetsuo", signal: "red", overdue: 0, today: 2, within5: 2, total: 4,
+    tasks: [
+      { label: "【BBT】運営対応依頼：予報士休みに伴う原稿対応A", status: "today", detail: "今日〆切" },
+      { label: "【BBT】運営対応依頼：予報士休みに伴う原稿対応B", status: "today", detail: "今日〆切" },
+      { label: "【BBT】運営対応依頼：予報士休みに伴う原稿対応C", status: "within5", detail: "3日後〆切" },
+      { label: "【BBT】運営対応依頼：予報士休みに伴う原稿対応D", status: "within5", detail: "4日後〆切" }
+    ]},
+  { name: "Shota Koizumi（koiz-s）", signal: "red", overdue: 2, today: 0, within5: 3, total: 6,
+    tasks: [
+      { label: "【AAB】受注エントリー：デジタル記事向けサービス（体系整理後）", status: "overdue", detail: "期限切れ（3日前）" },
+      { label: "【AAB】受注エントリー：デジタル記事向けサービス2", status: "overdue", detail: "期限切れ（1日前）" },
+      { label: "【AAB】受注エントリー：2026年度更新", status: "within5", detail: "2日後〆切" },
+      { label: "【AAB】受注エントリー：2026年度更新2", status: "within5", detail: "3日後〆切" },
+      { label: "【AAB】受注エントリー：2026年度更新3", status: "within5", detail: "4日後〆切" },
+      { label: "【AAB】受注エントリー：2026年度更新4", status: "safe", detail: "30日後〆切" }
+    ]},
+  { name: "amayu", signal: "yellow", overdue: 0, today: 0, within5: 3, total: 4,
+    tasks: [
+      { label: "【TBS】受注エントリー：TBS2026年度A", status: "within5", detail: "2日後〆切" },
+      { label: "【TBS】受注エントリー：TBS2026年度B", status: "within5", detail: "3日後〆切" },
+      { label: "【TBS】受注エントリー：TBS2026年度C", status: "within5", detail: "4日後〆切" },
+      { label: "【TBS】受注エントリー：TBS2026年度D", status: "safe", detail: "30日後〆切" }
+    ]},
+  { name: "anaz-k", signal: "green", overdue: 0, today: 0, within5: 2, total: 3,
+    tasks: [
+      { label: "タスク A", status: "within5", detail: "2日後〆切" },
+      { label: "タスク B", status: "within5", detail: "4日後〆切" },
+      { label: "タスク C", status: "safe", detail: "30日後〆切" }
+    ]},
+  { name: "aramaki", signal: "red", overdue: 1, today: 0, within5: 2, total: 3,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 2", status: "within5", detail: "2日後〆切" },
+      { label: "タスク 3", status: "within5", detail: "4日後〆切" }
+    ]},
+  { name: "gaito", signal: "green", overdue: 0, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "タスク A", status: "safe", detail: "20日後〆切" }]},
+  { name: "hattori", signal: "green", overdue: 0, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "タスク A", status: "safe", detail: "25日後〆切" }]},
+  { name: "hitoki", signal: "red", overdue: 1, today: 0, within5: 0, total: 2,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 2", status: "safe", detail: "30日後〆切" }
+    ]},
+  { name: "ikedam", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "タスク A", status: "within5", detail: "3日後〆切" }]},
+  { name: "itoi", signal: "green", overdue: 0, today: 0, within5: 2, total: 6,
+    tasks: [
+      { label: "タスク A", status: "within5", detail: "2日後〆切" },
+      { label: "タスク B", status: "within5", detail: "4日後〆切" },
+      { label: "タスク C", status: "safe", detail: "10日後〆切" },
+      { label: "タスク D", status: "safe", detail: "20日後〆切" },
+      { label: "タスク E", status: "safe", detail: "40日後〆切" },
+      { label: "タスク F", status: "safe", detail: "60日後〆切" }
+    ]},
+  { name: "kane-h", signal: "green", overdue: 0, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "タスク A", status: "safe", detail: "14日後〆切" }]},
+  { name: "kasakou", signal: "red", overdue: 1, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" }]},
+  { name: "katsumata", signal: "red", overdue: 1, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" }]},
+  { name: "kida-s", signal: "red", overdue: 2, today: 0, within5: 1, total: 3,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 2", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 3", status: "within5", detail: "3日後〆切" }
+    ]},
+  { name: "kitazy", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "タスク A", status: "within5", detail: "4日後〆切" }]},
+  { name: "koshih", signal: "red", overdue: 2, today: 0, within5: 0, total: 2,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 2", status: "overdue", detail: "期限切れ" }
+    ]},
+  { name: "moriguchi", signal: "yellow", overdue: 0, today: 0, within5: 4, total: 4,
+    tasks: [
+      { label: "タスク A", status: "within5", detail: "1日後〆切" },
+      { label: "タスク B", status: "within5", detail: "2日後〆切" },
+      { label: "タスク C", status: "within5", detail: "3日後〆切" },
+      { label: "タスク D", status: "within5", detail: "5日後〆切" }
+    ]},
+  { name: "okuda", signal: "red", overdue: 0, today: 2, within5: 2, total: 4,
+    tasks: [
+      { label: "今日〆切タスク 1", status: "today", detail: "今日〆切" },
+      { label: "今日〆切タスク 2", status: "today", detail: "今日〆切" },
+      { label: "タスク 3", status: "within5", detail: "3日後〆切" },
+      { label: "タスク 4", status: "within5", detail: "5日後〆切" }
+    ]},
+  { name: "ozawa", signal: "red", overdue: 0, today: 1, within5: 1, total: 2,
+    tasks: [
+      { label: "今日〆切タスク 1", status: "today", detail: "今日〆切" },
+      { label: "タスク 2", status: "within5", detail: "4日後〆切" }
+    ]},
+  { name: "sasaer", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "タスク A", status: "within5", detail: "2日後〆切" }]},
+  { name: "stoshi", signal: "red", overdue: 1, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" }]},
+  { name: "takaic", signal: "red", overdue: 1, today: 0, within5: 1, total: 2,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 2", status: "within5", detail: "4日後〆切" }
+    ]},
+  { name: "ukai", signal: "red", overdue: 1, today: 1, within5: 1, total: 3,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "今日〆切タスク 1", status: "today", detail: "今日〆切" },
+      { label: "タスク 3", status: "within5", detail: "3日後〆切" }
+    ]},
+  { name: "yam-ka", signal: "red", overdue: 4, today: 0, within5: 0, total: 5,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 2", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 3", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 4", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 5", status: "safe", detail: "30日後〆切" }
+    ]},
+  { name: "yogawa", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "タスク A", status: "within5", detail: "5日後〆切" }]},
+  { name: "ぼちゃん", signal: "red", overdue: 1, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" }]},
+  { name: "上島光雄", signal: "red", overdue: 1, today: 0, within5: 2, total: 3,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 2", status: "within5", detail: "2日後〆切" },
+      { label: "タスク 3", status: "within5", detail: "4日後〆切" }
+    ]},
+  { name: "久能木百香", signal: "red", overdue: 1, today: 0, within5: 0, total: 1,
+    tasks: [{ label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" }]},
+  { name: "大波多（中森）美奈", signal: "green", overdue: 0, today: 0, within5: 1, total: 1,
+    tasks: [{ label: "タスク A", status: "within5", detail: "3日後〆切" }]},
+  { name: "登太陽", signal: "red", overdue: 5, today: 0, within5: 1, total: 6,
+    tasks: [
+      { label: "期限切れタスク 1", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 2", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 3", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 4", status: "overdue", detail: "期限切れ" },
+      { label: "期限切れタスク 5", status: "overdue", detail: "期限切れ" },
+      { label: "タスク 6", status: "within5", detail: "4日後〆切" }
+    ]}
+];
+
+const SIGNAL_COLORS = { red: '#e53e3e', yellow: '#d69e2e', green: '#38a169' };
+const SIGNAL_LABELS = { red: '🔴 危険', yellow: '🟡 注意', green: '🟢 安全' };
+const TASK_STYLES = {
+  overdue: { bg: '#fee2e2', border: '#e53e3e', color: '#e53e3e' },
+  today: { bg: '#fffbeb', border: '#d69e2e', color: '#d69e2e' },
+  within5: { bg: '#eff6ff', border: '#3569c0', color: '#3569c0' },
+  safe: { bg: '#f0fdf4', border: '#38a169', color: '#38a169' }
+};
+
+let currentFilter = 'all';
+let openMembers = {};
+let workloadChartInstance = null;
+
+function switchTab(tabId) {
+  ['today','members','workload'].forEach(id => {
+    document.getElementById('tab-' + id).classList.remove('active');
+    document.getElementById('content-' + id).classList.remove('active');
+  });
+  document.getElementById('tab-' + tabId).classList.add('active');
+  document.getElementById('content-' + tabId).classList.add('active');
+  if (tabId === 'workload' && !workloadChartInstance) {
+    initWorkloadChart();
+  }
+}
+
+function filterMembers(signal) {
+  currentFilter = signal;
+  ['all','red','yellow','green'].forEach(s => {
+    document.getElementById('filter-' + s).classList.remove('active');
+  });
+  document.getElementById('filter-' + signal).classList.add('active');
+  renderMembers();
+}
+
+function toggleMember(name) {
+  openMembers[name] = !openMembers[name];
+  const safeName = CSS.escape(name);
+  const area = document.getElementById('task-area-' + name.replace(/[^a-zA-Z0-9ぁ-んァ-ヶ一-龥ー（）・]/g, '_'));
+  const chevron = document.getElementById('chevron-' + name.replace(/[^a-zA-Z0-9ぁ-んァ-ヶ一-龥ー（）・]/g, '_'));
+  if (area) area.style.display = openMembers[name] ? 'block' : 'none';
+  if (chevron) chevron.textContent = openMembers[name] ? '▲' : '▼';
+}
+
+function safeid(name) {
+  return name.replace(/[^a-zA-Z0-9ぁ-んァ-ヶ一-龥ー]/g, '_');
+}
+
+function renderMembers() {
+  const filtered = currentFilter === 'all' ? MEMBERS : MEMBERS.filter(m => m.signal === currentFilter);
+  document.getElementById('show-count').textContent = filtered.length + '名を表示中（全' + MEMBERS.length + '名）';
+  const list = document.getElementById('members-list');
+  list.innerHTML = '';
+  filtered.forEach(m => {
+    const sc = SIGNAL_COLORS[m.signal];
+    const sl = SIGNAL_LABELS[m.signal];
+    const id = safeid(m.name);
+    const isOpen = openMembers[m.name] || false;
+    let badges = '';
+    if (m.overdue > 0) badges += `<span class="badge-overdue2">期限切れ${m.overdue}件</span>`;
+    if (m.today > 0) badges += `<span class="badge-today2">今日${m.today}件</span>`;
+    if (m.within5 > 0) badges += `<span class="badge-within5">5日内${m.within5}件</span>`;
+    const safeVal = m.total - m.overdue - m.today - m.within5;
+    if (safeVal > 0) badges += `<span class="badge-safe">余裕${safeVal}件</span>`;
+    let tasksHtml = '';
+    if (m.tasks && m.tasks.length > 0) {
+      m.tasks.forEach(t => {
+        const ts = TASK_STYLES[t.status] || TASK_STYLES.safe;
+        tasksHtml += `<div class="task-item" style="background:${ts.bg};border-left:3px solid ${ts.border};">
+          <div class="task-item-name">${escapeHtml(t.label)}</div>
+          <div class="task-item-detail" style="color:${ts.color};">${escapeHtml(t.detail)}</div>
+        </div>`;
+      });
+    } else {
+      tasksHtml = `<div style="font-size:12px;color:#666;padding:8px 0;">タスク詳細データなし</div>`;
+    }
+    const cardHtml = `<div class="member-card" style="border-left:4px solid ${sc};" id="mcard-${id}">
+      <button class="member-header-btn" onclick="toggleMember('${m.name.replace(/'/g, "\\'")}')">
+        <div class="member-header-left">
+          <span class="member-name">${escapeHtml(m.name)}</span>
+          <span class="signal-label" style="color:${sc};">${sl}</span>
+          <span class="task-count">計${m.total}件</span>
+          ${badges}
+        </div>
+        <span class="chevron" id="chevron-${id}">${isOpen ? '▲' : '▼'}</span>
+      </button>
+      <div class="task-area" id="task-area-${id}" style="display:${isOpen ? 'block' : 'none'};">
+        ${tasksHtml}
+      </div>
+    </div>`;
+    list.insertAdjacentHTML('beforeend', cardHtml);
+  });
+}
+
+function renderTodayList() {
+  const urgentMembers = MEMBERS.filter(m => m.overdue > 0 || m.today > 0);
+  const list = document.getElementById('today-list');
+  list.innerHTML = '';
+  urgentMembers.forEach(m => {
+    const hasOverdue = m.overdue > 0;
+    const hasToday = m.today > 0;
+    const borderColor = hasOverdue ? '#e53e3e' : '#d69e2e';
+    let badgeHtml = '';
+    if (hasOverdue) badgeHtml += '<span class="badge-overdue">期限切れ</span>';
+    if (hasToday) badgeHtml += '<span class="badge-today">今日〆切</span>';
+    const urgentTasks = m.tasks.filter(t => t.status === 'overdue' || t.status === 'today');
+    let tasksHtml = '';
+    if (urgentTasks.length > 0) {
+      urgentTasks.forEach(t => {
+        tasksHtml += `<div class="today-task">${escapeHtml(t.label)} — ${escapeHtml(t.detail)}</div>`;
+      });
+    } else {
+      const od = m.overdue; const td = m.today;
+      if (od > 0) for(let i=1;i<=od;i++) tasksHtml += `<div class="today-task">期限切れタスク ${i}</div>`;
+      if (td > 0) for(let i=1;i<=td;i++) tasksHtml += `<div class="today-task">今日〆切タスク ${i}</div>`;
+    }
+    const entryHtml = `<div class="today-entry" style="border-left:4px solid ${borderColor};padding-left:12px;">
+      <div class="today-name-row">
+        <span class="today-name">${escapeHtml(m.name)}</span>
+        ${badgeHtml}
+      </div>
+      ${tasksHtml}
+    </div>`;
+    list.insertAdjacentHTML('beforeend', entryHtml);
+  });
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function truncate(str, len) {
+  return str.length > len ? str.substring(0, len) + '…' : str;
+}
+
+function initWorkloadChart() {
+  const sorted = [...MEMBERS].sort((a, b) => b.total - a.total);
+  const labels = sorted.map(m => truncate(m.name, 10));
+  const urgentData = sorted.map(m => m.overdue + m.today);
+  const within5Data = sorted.map(m => m.within5);
+  const safeData = sorted.map(m => m.total - m.overdue - m.today - m.within5);
+  const ctx = document.getElementById('workloadChart').getContext('2d');
+  workloadChartInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: '期限切れ・今日', data: urgentData, backgroundColor: '#e53e3e', stack: 'a' },
+        { label: '5日以内', data: within5Data, backgroundColor: '#d69e2e', stack: 'a' },
+        { label: '余裕', data: safeData, backgroundColor: '#38a169', stack: 'a' }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'top' }
+      },
+      scales: {
+        x: { stacked: true, ticks: { font: { size: 11 } } },
+        y: { stacked: true, ticks: { font: { size: 11 } } }
+      },
+      datasets: { bar: { barThickness: 18 } }
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderTodayList();
+  renderMembers();
+});
+</script>
+</body>
+</html>
