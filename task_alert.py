@@ -15,7 +15,6 @@ import json
 import urllib.request
 import urllib.parse
 import tempfile
-import subprocess
 from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 
@@ -32,6 +31,14 @@ JST           = ZoneInfo("Asia/Tokyo")
 TODAY         = date.today()
 ALERT_DAYS    = 5
 CAUTION_COUNT = 3
+
+# ─────────────────────────────────────────
+# フィルタリング設定（運用中に変更する可能性あり）
+# ─────────────────────────────────────────
+FILTER_DAYS      = 14        # 対象期間：今日から前後N日（例：14 = 前後2週間）
+EXCLUDE_KEYWORDS = [         # タイトルに含まれる場合に除外するキーワード
+    "防災気象情報の体系整理",
+]
 
 # ─────────────────────────────────────────
 # Backlog API
@@ -75,6 +82,27 @@ def fetch_issues(project_id: int) -> list:
         "parentChild": 1,
     }
     return backlog_get("/issues", params)
+
+
+def is_target_issue(issue: dict) -> bool:
+    """チケットがフィルタリング条件を満たすか判定する"""
+    # 除外キーワードチェック
+    title = issue.get("summary", "")
+    for keyword in EXCLUDE_KEYWORDS:
+        if keyword in title:
+            return False
+
+    # 期限日チェック（前後N日以内）
+    due_raw = issue.get("dueDate")
+    if due_raw is None:
+        return False  # 期限なしは対象外
+    try:
+        due = date.fromisoformat(due_raw[:10])
+    except ValueError:
+        return False
+    date_from = TODAY - timedelta(days=FILTER_DAYS)
+    date_to   = TODAY + timedelta(days=FILTER_DAYS)
+    return date_from <= due <= date_to
 
 # ─────────────────────────────────────────
 # 判定ロジック
@@ -192,42 +220,6 @@ def build_summary(results: list, total_issues: int) -> dict:
         "total_tickets": sum(r["total"] for r in results),
         "generated_at":  generated_at,
     }
-
-# ─────────────────────────────────────────
-# Slack Block Kit 構築
-# ─────────────────────────────────────────
-
-def build_blocks(results: list, summary: dict) -> list:
-    """Slack Block Kit のブロックリストを構築"""
-    weekdays_ja = ["月", "火", "水", "木", "金", "土", "日"]
-    today_str = TODAY.strftime(f"%Y/%m/%d（{weekdays_ja[TODAY.weekday()]}）")
-    blocks = [
-        {"type": "header", "text": {"type": "plain_text", "text": f"📋 タスク期限アラート｜{today_str}", "emoji": True}},
-        {"type": "divider"},
-        {"type": "section", "fields": [
-            {"type": "mrkdwn", "text": f"*🔴 期限切れ*\n{summary['overdue']} 件"},
-            {"type": "mrkdwn", "text": f"*🟠 今日〆切*\n{summary['today']} 件"},
-            {"type": "mrkdwn", "text": f"*🟡 5日以内*\n{summary['soon']} 件"},
-            {"type": "mrkdwn", "text": f"*👥 対象メンバー*\n{summary['members']} 名"},
-        ]},
-        {"type": "divider"},
-    ]
-    for member in results:
-        icon = {"red": "🔴", "yellow": "🟡", "green": "🟢"}.get(member["signal"], "⚪")
-        parts = [f"{icon} *{member['name']}*"]
-        if member["overdue"] > 0:
-            parts.append(f"期限切れ: {member['overdue']}件")
-        if member["today"] > 0:
-            parts.append(f"今日: {member['today']}件")
-        if member["tomorrow"] > 0:
-            parts.append(f"明日: {member['tomorrow']}件")
-        if member["soon"] > 0:
-            parts.append(f"5日以内: {member['soon']}件")
-        blocks.append({"type": "section", "text": {"type": "mrkdwn", "text": "　".join(parts)}})
-    blocks.append({"type": "divider"})
-    blocks.append({"type": "context", "elements": [{"type": "mrkdwn",
-        "text": f"対象プロジェクト: {PROJECT_KEY}　|　取得チケット数: {summary['total_issues']} 件　|　生成日時: {summary['generated_at']}"}]})
-    return blocks
 
 # ─────────────────────────────────────────
 # Slack通知HTML生成
@@ -380,7 +372,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
         signal = member["signal"]
         border_color = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#22c55e")
         dot_color    = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#22c55e")
-        badge_label  = {"red": "緊急", "yellow": "注意", "green": "順調"}.get(signal, "安全")
+        badge_label  = {"red": "緊急", "yellow": "注意", "green": "順調"}.get(signal, "順調")
         total = member["total"]
 
         # チケット行（期限切れは赤色表示）
@@ -613,23 +605,23 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     data: {{
       labels: {chart_labels_js},
       datasets: [
-  {{ label: '期限切れ', data: {chart_overdue_js}, backgroundColor: '#dc2626' }},
-  {{ label: '今日〆切', data: {chart_today_js},   backgroundColor: '#f97316' }},
-  {{ label: '5日以内',  data: {chart_soon_js},    backgroundColor: '#ca8a04' }},
-  {{ label: '6日以上',  data: {chart_ok_js},      backgroundColor: '#16a34a' }},
-],
+        {{ label: '期限切れ', data: {chart_overdue_js}, backgroundColor: '#dc2626' }},
+        {{ label: '今日〆切', data: {chart_today_js},   backgroundColor: '#f97316' }},
+        {{ label: '5日以内',  data: {chart_soon_js},    backgroundColor: '#ca8a04' }},
+        {{ label: '6日以上',  data: {chart_ok_js},      backgroundColor: '#16a34a' }},
+      ],
     }},
     options: {{
-  indexAxis: 'y',
-  responsive: true,
-  barThickness: 22,
+      indexAxis: 'y',
+      responsive: true,
+      barThickness: 22,
       plugins: {{
-  legend: {{
-    position: 'top',
-    align: 'start',
-    reverse: true,
-    labels: {{ boxWidth: 14, color: '#374151', padding: 16 }}
-  }},
+        legend: {{
+          position: 'top',
+          align: 'start',
+          reverse: true,
+          labels: {{ boxWidth: 14, color: '#374151', padding: 16 }}
+        }},
         tooltip: {{
           callbacks: {{
             title: (items) => items[0].label,
@@ -637,13 +629,13 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
             afterBody: (items) => {{
               const idx = items[0].dataIndex;
               const ds  = items[0].chart.data.datasets;
-              // datasets順: 6日以上[0], 5日以内[1], 今日〆切[2], 期限切れ[3]
+              // datasets順: 期限切れ[0], 今日〆切[1], 5日以内[2], 6日以上[3]
               return [
-  '期限切れ: ' + ds[0].data[idx] + '件',
-  '今日〆切: ' + ds[1].data[idx] + '件',
-  '5日以内: '  + ds[2].data[idx] + '件',
-  '6日以上: '  + ds[3].data[idx] + '件',
-];
+                '期限切れ: ' + ds[0].data[idx] + '件',
+                '今日〆切: ' + ds[1].data[idx] + '件',
+                '5日以内: '  + ds[2].data[idx] + '件',
+                '6日以上: '  + ds[3].data[idx] + '件',
+              ];
             }},
           }},
           backgroundColor: '#fff',
@@ -747,14 +739,18 @@ def main() -> None:
     issues = fetch_issues(project_id)
     print(f"取得チケット数: {len(issues)} 件")
 
-    # 3. 担当者別集計
+    # 3. フィルタリング（前後{FILTER_DAYS}日・除外キーワード）
+    issues = [i for i in issues if is_target_issue(i)]
+    print(f"フィルタリング後: {len(issues)} 件")
+
+    # 4. 担当者別集計
     results = aggregate_by_assignee(issues)
     print(f"対象メンバー数: {len(results)} 名")
 
-    # 4. サマリー集計
+    # 5. サマリー集計
     summary = build_summary(results, len(issues))
 
-    # 5. Slack通知画像生成 → スクリーンショット → Slack投稿
+    # 6. Slack通知画像生成 → スクリーンショット → Slack投稿
     slack_html = generate_slack_html(results, summary)
     screenshot_path = "/tmp/task_alert.png"
     weekdays_ja = ["月", "火", "水", "木", "金", "土", "日"]
@@ -769,18 +765,19 @@ def main() -> None:
                 f"🔴 期限切れ: {summary['overdue']}件　"
                 f"🟠 今日〆切: {summary['today']}件　"
                 f"🟡 5日以内: {summary['soon']}件　"
-                f"👥 対象: {summary['members']}名\n"    f"📊 詳細ダッシュボード: https://ukai1156.github.io/land-cs-task-alert/")
+                f"👥 対象: {summary['members']}名\n"
+                f"📊 詳細ダッシュボード: https://ukai1156.github.io/land-cs-task-alert/")
         )
     except Exception as e:
         print(f"⚠️ Slack画像投稿エラー: {e}")
 
-    # 6. ダッシュボードHTML生成
+    # 7. ダッシュボードHTML生成
     dashboard_html = generate_dashboard_html(results, summary)
     with open("dashboard.html", "w", encoding="utf-8") as f:
         f.write(dashboard_html)
     print("ダッシュボードHTML生成完了: dashboard.html")
 
-    # 7. ログ出力
+    # 8. ログ出力
     print(f"\n📝 生成日時: {summary['generated_at']}")
     print(f"期限切れ: {summary['overdue']}件 / 今日: {summary['today']}件 / 5日以内: {summary['soon']}件")
     print("✅ 処理完了")
