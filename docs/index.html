@@ -302,7 +302,7 @@
   <div class="tab3-heading">📊 メンバー別ワークロード（積み上げ横棒グラフ）</div>
   <div class="tab3-subtext">タスク数の多い順に並べています。</div>
   <div class="chart-container">
-    <canvas id="workloadChart" height="432"></canvas>
+    <canvas id="workloadChart" height="624"></canvas>
   </div>
 </div>
 
@@ -343,17 +343,16 @@
     data: {
       labels: ["yam-ka", "katsumata", "上島光雄", "Nakanishi Mikako (na-mik)", "Miyuki Hirose", "takaic", "yuri", "takach", "kasakou", "高森美枝", "machida shuichi", "moriyama"],
       datasets: [
-  { label: '6日以上',  data: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],      backgroundColor: '#16a34a' },
-  { label: '5日以内',  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],    backgroundColor: '#ca8a04' },
-  { label: '今日〆切', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   backgroundColor: '#f97316' },
   { label: '期限切れ', data: [8, 6, 2, 1, 1, 1, 2, 1, 1, 1, 1, 0], backgroundColor: '#dc2626' },
+  { label: '今日〆切', data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   backgroundColor: '#f97316' },
+  { label: '5日以内',  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],    backgroundColor: '#ca8a04' },
+  { label: '6日以上',  data: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],      backgroundColor: '#16a34a' },
 ],
     },
     options: {
   indexAxis: 'y',
   responsive: true,
-  categoryPercentage: 0.8,
-  barPercentage: 0.9,
+  barThickness: 18,
       plugins: {
   legend: {
     position: 'top',
@@ -370,10 +369,10 @@
               const ds  = items[0].chart.data.datasets;
               // datasets順: 6日以上[0], 5日以内[1], 今日〆切[2], 期限切れ[3]
               return [
-  '期限切れ: ' + ds[3].data[idx] + '件',
-  '今日〆切: ' + ds[2].data[idx] + '件',
-  '5日以内: '  + ds[1].data[idx] + '件',
-  '6日以上: '  + ds[0].data[idx] + '件',
+  '期限切れ: ' + ds[0].data[idx] + '件',
+  '今日〆切: ' + ds[1].data[idx] + '件',
+  '5日以内: '  + ds[2].data[idx] + '件',
+  '6日以上: '  + ds[3].data[idx] + '件',
 ];
             },
           },
