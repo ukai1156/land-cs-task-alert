@@ -1,0 +1,337 @@
+import React, { useMemo } from "react";
+
+const DS = {
+  bg: "#ffffff",
+  pageBg: "#f9f9f9",
+  cardBg: "#eef1f8",
+  border: "#dfe4f0",
+  shadow: "0px 2px 4px 0px rgba(0,0,0,.25)",
+  radius: "8px",
+  primaryBlue: "#3569c0",
+  darkBlue: "#0c419a",
+  textDefault: "#303030",
+  textHeading: "#101010",
+};
+
+const globalStyle = `
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: ${DS.pageBg}; font-family: Arial, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", メイリオ, Meiryo, sans-serif; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid ${DS.border}; padding: 8px 12px; font-size: 14px; color: ${DS.textDefault}; text-align: left; }
+  th { background: ${DS.cardBg}; font-weight: bold; color: ${DS.textHeading}; }
+  tr:nth-child(even) td { background: #f5f7fc; }
+`;
+
+const SectionTitle: React.FC<{ num: string; title: string }> = ({ num, title }) => (
+  <h2 style={{ fontSize: 18, fontWeight: "bold", color: DS.textHeading, display: "flex", alignItems: "center", gap: 8, marginBottom: 18, marginTop: 0 }}>
+    <span style={{ background: DS.primaryBlue, color: "#fff", borderRadius: 4, padding: "2px 8px", fontSize: 13, fontWeight: "bold" }}>{num}</span>
+    {title}
+  </h2>
+);
+
+const Card: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
+  <div style={{ background: DS.cardBg, border: `1px solid ${DS.border}`, borderRadius: DS.radius, boxShadow: DS.shadow, padding: 20, ...style }}>
+    {children}
+  </div>
+);
+
+const Divider: React.FC = () => (
+  <div style={{ borderTop: `1px solid ${DS.border}`, margin: "36px 0" }} />
+);
+
+const Section1: React.FC = () => {
+  const parts = useMemo(() => [
+    { icon: "⏰", num: "パーツ①", label: "トリガー", desc: "毎日 朝8:00（JST）月〜金" },
+    { icon: "📦", num: "パーツ②", label: "ソース元", desc: "Backlog API" },
+    { icon: "⚙️", num: "パーツ③", label: "処理する場所", desc: "Python スクリプト" },
+    { icon: "📤", num: "パーツ④", label: "届ける先", desc: "Slack + ダッシュボード" },
+  ], []);
+  return (
+    <section>
+      <SectionTitle num="1" title="全体フロー図" />
+      <p style={{ fontSize: 14, color: DS.textDefault, marginBottom: 20 }}>4つのパーツが連携して毎朝チームに自動報告を届けます。</p>
+      <div style={{ display: "flex", alignItems: "center", gap: 0, flexWrap: "wrap", justifyContent: "center" }}>
+        {parts.map((p, i) => (
+          <React.Fragment key={p.num}>
+            <Card style={{ flex: 1, minWidth: 160, maxWidth: 220, textAlign: "center", padding: "20px 12px" }}>
+              <div style={{ fontSize: 28, marginBottom: 6 }}>{p.icon}</div>
+              <div style={{ fontSize: 13, color: DS.primaryBlue, fontWeight: "bold", marginBottom: 4 }}>{p.num}</div>
+              <div style={{ fontSize: 14, fontWeight: "bold", color: DS.textHeading, marginBottom: 4 }}>{p.label}</div>
+              <div style={{ fontSize: 13, color: DS.textDefault }}>{p.desc}</div>
+            </Card>
+            {i < parts.length - 1 && (
+              <div style={{ fontSize: 22, color: DS.primaryBlue, padding: "0 8px" }}>→</div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const Section2: React.FC = () => (
+  <section>
+    <SectionTitle num="2" title="4パーツ 詳細カード" />
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <Card>
+        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ① トリガー</div>
+        <table>
+          <tbody>
+            <tr><th>種類</th><td>時間トリガー</td></tr>
+            <tr><th>実行タイミング</th><td>毎日 朝8:00（JST）自動実行</td></tr>
+            <tr><th>対象日</th><td><strong>月〜金（土日除く）</strong></td></tr>
+            <tr><th>将来拡張案</th><td>進捗会の前日など追加トリガーも検討可</td></tr>
+          </tbody>
+        </table>
+      </Card>
+      <Card>
+        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ② ソース元</div>
+        <table>
+          <tbody>
+            <tr><th>ツール</th><td>Backlog API</td></tr>
+            <tr><th>対象プロジェクト</th><td>特定の1プロジェクト</td></tr>
+            <tr><th>取得対象チケット</th><td><strong>親チケットのみ</strong>（ステータスが「完了以外」のもの）※現在はMVP。将来的に子チケット対応予定</td></tr>
+            <tr><th>主なデータ項目</th><td>担当者名・タスク名・〆切日・ステータス</td></tr>
+            <tr><th>認証方法</th><td>APIキー（チームのBacklogスペースで発行）</td></tr>
+            <tr><th>補足</th><td>最新データはBacklog側に保管。毎回APIで取得する</td></tr>
+          </tbody>
+        </table>
+      </Card>
+      <Card>
+        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ③ 処理する場所</div>
+        <table>
+          <tbody>
+            <tr><th>実行環境</th><td><strong>GitHub Actions</strong>（ubuntu-latest）</td></tr>
+            <tr><th>処理①</th><td>集計：担当者別に〆切タスクを集計（今日・5日以内・期限切れ）</td></tr>
+            <tr><th>処理②</th><td>判定：信号機ロジックで緊急度を判定（下記ロジック参照）</td></tr>
+            <tr><th>処理③（現在）</th><td><strong>Slack Block Kit テキスト形式</strong>で投稿</td></tr>
+            <tr><th>処理③（将来）</th><td><strong>Playwright → HTMLスクリーンショット → 画像投稿</strong> ⬜ 予定</td></tr>
+            <tr><th>処理④</th><td>データ整形：詳細ダッシュボード用のデータを整形・出力</td></tr>
+          </tbody>
+        </table>
+      </Card>
+      <Card>
+        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ④ 届ける先</div>
+        <table>
+          <tbody>
+            <tr><th>届け先①</th><td>Slack <code style={{ background: "#e8ecf4", padding: "1px 5px", borderRadius: 3 }}>#wincs-cs</code> チャンネルに投稿</td></tr>
+            <tr><th>届け先②</th><td>詳細ダッシュボード（WxHub / HTML）へのURLリンクをSlack投稿に添付</td></tr>
+            <tr><th>@channelメンション</th><td><strong>なし</strong>（現状採用）</td></tr>
+            <tr><th>受け取る人</th><td>チームメンバー全員（約30名）</td></tr>
+            <tr><th>各担当者の目的</th><td>自分の〆切タスクを把握して危機感を持ち、詳細ダッシュボードを見に行く</td></tr>
+            <tr><th>チームリーダーの目的</th><td>ワークロードバランスを確認し、助け合いのアクションを取る</td></tr>
+          </tbody>
+        </table>
+      </Card>
+    </div>
+  </section>
+);
+
+const Section3: React.FC = () => (
+  <section>
+    <SectionTitle num="3" title="Slack投稿仕様" />
+    <Card style={{ marginBottom: 20 }}>
+      <table>
+        <tbody>
+          <tr><th>投稿チャンネル</th><td><code style={{ background: "#e8ecf4", padding: "1px 5px", borderRadius: 3 }}>#wincs-cs</code></td></tr>
+          <tr><th>投稿タイミング</th><td>毎日 朝8:00（JST）月〜金</td></tr>
+        </tbody>
+      </table>
+    </Card>
+    <div style={{ background: "#1a1a2e", border: "1px solid #333", borderRadius: DS.radius, padding: 20 }}>
+      <div style={{ color: "#a0c4ff", fontSize: 13, marginBottom: 12 }}>投稿プレビュー（イメージ）</div>
+      <div style={{ background: "#23233a", borderRadius: 6, padding: 16, color: "#e0e0e0" }}>
+        <div style={{ marginBottom: 6, fontSize: 14 }}>📅 <strong>2026/04/26 朝</strong></div>
+        <div style={{ marginBottom: 6, fontSize: 14 }}>🏢 <strong>Land CS チーム</strong></div>
+        <div style={{ color: "#ffd700", fontSize: 15, marginBottom: 16 }}>⚠ 今日・5日以内の〆切タスク確認</div>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+          {[
+            { icon: "🚨", label: "期限切れ", color: "#c0392b" },
+            { icon: "🔴", label: "今日〆切", color: "#c0392b" },
+            { icon: "⏰", label: "5日以内", color: "#d68910" },
+            { icon: "👥", label: "担当者数", color: "#3569c0" },
+          ].map((b) => (
+            <div key={b.label} style={{ background: "#2d2d4e", borderRadius: 6, padding: "8px 14px", textAlign: "center", minWidth: 90 }}>
+              <div style={{ fontSize: 13 }}>{b.icon} <span style={{ color: b.color, fontWeight: "bold" }}>N件</span></div>
+              <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>{b.label}</div>
+            </div>
+          ))}
+        </div>
+        {[
+          { icon: "🔴", label: "緊急セクション", border: "#e74c3c", desc: "期限切れ・今日〆切あり" },
+          { icon: "🟡", label: "注意セクション", border: "#f39c12", desc: "5日以内3件以上" },
+          { icon: "🟢", label: "順調セクション", border: "#27ae60", desc: "期限タスク1件以上・緊急/注意以外" },
+        ].map((s) => (
+          <div key={s.label} style={{ borderLeft: `4px solid ${s.border}`, paddingLeft: 12, marginBottom: 10 }}>
+            <div style={{ fontSize: 13, fontWeight: "bold" }}>{s.icon} {s.label}</div>
+            <div style={{ fontSize: 12, color: "#aaa" }}>{s.desc}</div>
+          </div>
+        ))}
+        <div style={{ marginTop: 14, fontSize: 13, color: "#5dade2" }}>
+          📊 詳細ダッシュボードを見る → https://wxhub.example.com/dashboard
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const Section4: React.FC = () => (
+  <section>
+    <SectionTitle num="4" title="詳細ダッシュボード 機能一覧" />
+    <p style={{ fontSize: 14, color: DS.textDefault, marginBottom: 16 }}>優先度順に実装予定の機能一覧：</p>
+    <Card>
+      <table>
+        <thead>
+          <tr><th style={{ width: 60 }}>優先度</th><th>機能</th><th>内容</th></tr>
+        </thead>
+        <tbody>
+          {[
+            ["①", "今日・明日〆切タスク一覧", "担当者名・タスク名・〆切日"],
+            ["②", "メンバー別タスク一覧", "タスク名・〆切日"],
+            ["③", "Backlogへの直接リンク", "タスク名クリックでBacklogチケットに遷移"],
+            ["④", "ワークロードグラフ", "棒グラフで全員のタスク数を比較"],
+            ["⑤", "担当者フィルター", "特定の人のタスクだけ絞り込み"],
+            ["⑥", "期限切れタスク一覧", "担当者名・タスク名・本来の〆切日"],
+          ].map(([p, f, c]) => (
+            <tr key={p}>
+              <td style={{ textAlign: "center", fontWeight: "bold", color: DS.primaryBlue }}>{p}</td>
+              <td>{f}</td>
+              <td>{c}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Card>
+  </section>
+);
+
+const Section5: React.FC = () => (
+  <section>
+    <SectionTitle num="5" title="信号機ロジック 判定基準" />
+    <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
+      <Card style={{ flex: 1, minWidth: 200, background: "#fdf2f2", border: "2px solid #c0392b" }}>
+        <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>🔴 赤：緊急</div>
+        <div style={{ fontSize: 14, color: DS.textDefault }}>今日〆切 または 期限切れのタスクがある</div>
+      </Card>
+      <Card style={{ flex: 1, minWidth: 200, background: "#fefdf2", border: "2px solid #d68910" }}>
+        <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>🟡 黄：注意</div>
+        <div style={{ fontSize: 14, color: DS.textDefault }}>5日以内に〆切のタスクが <strong>3件以上</strong> ある</div>
+        <div style={{ fontSize: 12, color: "#888", marginTop: 6 }}>※現状採用</div>
+      </Card>
+      <Card style={{ flex: 1, minWidth: 200, background: "#f2fdf5", border: "2px solid #1e8449" }}>
+        <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>🟢 緑：順調</div>
+        <div style={{ fontSize: 14, color: DS.textDefault }}>期限タスクが1件以上あり、緊急・注意に該当しない</div>
+        <div style={{ fontSize: 12, color: "#888", marginTop: 6 }}>※変更済み：タスクなしメンバーは対象外</div>
+      </Card>
+    </div>
+    <Card style={{ background: "#f0f4fc" }}>
+      <div style={{ fontSize: 14, color: DS.textDefault }}>
+        🟢 <strong>順調の対象：</strong> 期限タスクが1件以上あるメンバーのうち、🔴・🟡に該当しないメンバー。タスクが割り当てられていないメンバーはカウント対象外。
+      </div>
+    </Card>
+  </section>
+);
+
+const Section6: React.FC = () => {
+  const steps = useMemo(() => [
+    { step: "STEP 1", status: "✅ 完了", label: "現状整理・課題分解", state: "done" },
+    { step: "STEP 2", status: "✅ 完了", label: "意味の見極め（Backlog標準機能との比較）", state: "done" },
+    { step: "STEP 3", status: "✅ 完了", label: "MVP定義・プロトタイプ作成", state: "done" },
+    { step: "STEP 4", status: "✅ 完了", label: "PoC検証（Backlog API接続・実データ確認）", state: "done" },
+    { step: "STEP 5", status: "✅ 完了", label: "Pythonスクリプト作成", state: "done" },
+    { step: "STEP 6", status: "✅ 完了", label: "Slack連携設定（Block Kitテキスト形式）", state: "done" },
+    { step: "STEP 7", status: "✅ 完了", label: "詳細ダッシュボード 実データ接続", state: "done" },
+    { step: "STEP 8", status: "✅ 完了", label: "Playwright画像投稿への移行", state: "done" },
+    { step: "STEP 9", status: "🔜 次のステップ", label: "本番運用開始（チーム全体へのロールアウト）", state: "next" },
+  ], []);
+  return (
+    <section>
+      <SectionTitle num="6" title="ロードマップ" />
+      <div style={{ position: "relative", paddingLeft: 36 }}>
+        <div style={{ position: "absolute", left: 14, top: 0, bottom: 0, width: 2, background: DS.border }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {steps.map((s) => {
+            const isDone = s.state === "done";
+            const isNext = s.state === "next";
+            return (
+              <div key={s.step} style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 14 }}>
+                <div style={{
+                  position: "absolute", left: -29, top: 6,
+                  width: 18, height: 18, borderRadius: "50%",
+                  background: isDone ? DS.primaryBlue : isNext ? "#f39c12" : DS.border,
+                  border: `2px solid ${isDone ? DS.primaryBlue : isNext ? "#f39c12" : "#bbb"}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "#fff", fontSize: 10, fontWeight: "bold", flexShrink: 0,
+                }}>
+                  {isDone && "✓"}
+                </div>
+                <div style={{
+                  flex: 1, padding: "12px 16px", borderRadius: DS.radius,
+                  background: isNext ? "#fffbf0" : DS.cardBg,
+                  border: `1px solid ${isNext ? "#f39c12" : DS.border}`,
+                  boxShadow: isNext ? "0px 2px 6px rgba(243,156,18,0.2)" : "none",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 13, fontWeight: "bold", color: DS.primaryBlue }}>{s.step}</span>
+                    <span style={{ fontSize: 13, color: isDone ? "#27ae60" : "#d68910", fontWeight: isNext ? "bold" : "normal" }}>{s.status}</span>
+                    <span style={{ fontSize: 15, color: DS.textDefault, fontWeight: isNext ? "bold" : "normal" }}>{s.label}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ReportDesignDoc: React.FC = () => (
+  <>
+    <style>{globalStyle}</style>
+    <div style={{ background: DS.pageBg, minHeight: "100vh" }}>
+      {/* Header */}
+      <header style={{ background: DS.darkBlue, padding: "36px 24px", textAlign: "center" }}>
+        <div style={{ fontSize: 22, fontWeight: "bold", color: "#ffffff", marginBottom: 8 }}>
+          🔴🟡🟢 報告自動化ツール 設計ドキュメント
+        </div>
+        <div style={{ fontSize: 15, color: "#b8ccf0", marginBottom: 6 }}>
+          チームタスク進捗の自動可視化・通知フロー
+        </div>
+        <div style={{ fontSize: 13, color: "#8aa8d8" }}>
+          作成日：2026年4月26日　最終更新：2026年5月4日
+        </div>
+      </header>
+
+      {/* Main */}
+      <main style={{
+        maxWidth: 1070,
+        margin: "0 auto",
+        padding: "40px 24px 0",
+        background: DS.bg,
+        boxShadow: DS.shadow,
+        borderRadius: "0 0 8px 8px",
+      }}>
+        <Section1 />
+        <Divider />
+        <Section2 />
+        <Divider />
+        <Section3 />
+        <Divider />
+        <Section4 />
+        <Divider />
+        <Section5 />
+        <Divider />
+        <Section6 />
+
+        {/* Footer */}
+        <div style={{ textAlign: "center", paddingBottom: 32, paddingTop: 40 }}>
+          <div style={{ fontSize: 14, color: DS.textDefault, marginBottom: 4 }}>Land CS チーム</div>
+          <div style={{ fontSize: 12, color: "#888" }}>作成日：2026年4月26日　最終更新：2026年5月4日</div>
+        </div>
+      </main>
+    </div>
+  </>
+);
+
+export default ReportDesignDoc;
