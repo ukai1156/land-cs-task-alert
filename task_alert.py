@@ -72,7 +72,7 @@ def fetch_issues(project_id: int) -> list:
     params = {
         "projectId[]": project_id,
         "statusId[]": [1, 2, 3],
-        "parentChild": 2,
+        "parentChild": 1,
     }
     return backlog_get("/issues", params)
 
@@ -434,7 +434,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     chart_today_js   = json.dumps([m["today"]   for m in sorted_members])
     chart_soon_js    = json.dumps([m["soon"] + m["tomorrow"] for m in sorted_members])
     chart_ok_js      = json.dumps([m["ok"]     for m in sorted_members])
-    chart_height     = max(300, len(sorted_members) * 52)
+    chart_height     = max(300, len(sorted_members) * 38)
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -622,7 +622,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     options: {{
   indexAxis: 'y',
   responsive: true,
-  barThickness: 18,
+  barThickness: 22,
       plugins: {{
   legend: {{
     position: 'top',
