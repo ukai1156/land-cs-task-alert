@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>タスクアラート — Slack画像プレビュー</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0f1a;
+      font-family: 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', メイリオ, sans-serif;
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .wrapper {
+      background: #1a1a2e;
+      width: 800px;
+      max-width: 100%;
+      padding: 20px;
+      border-radius: 16px;
+    }
+
+    /* ヘッダー */
+    .header {
+      background: #16213e;
+      border-radius: 12px;
+      border-left: 4px solid #f1c40f;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .header-meta {
+      font-size: 13px;
+      color: #a0aec0;
+    }
+
+    /* サマリーカード */
+    .summary-grid {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .summary-card {
+      background: #16213e;
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      flex: 1;
+    }
+    .summary-icon { font-size: 22px; }
+    .summary-label { font-size: 12px; color: #a0aec0; letter-spacing: 0.03em; }
+    .summary-value { font-size: 32px; font-weight: 800; line-height: 1; }
+    .summary-value.red   { color: #e74c3c; }
+    .summary-value.gray  { color: #e2e8f0; }
+
+    /* セクション */
+    .section { margin-bottom: 20px; }
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #e2e8f0;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-count {
+      font-size: 12px;
+      color: #718096;
+      font-weight: 400;
+    }
+
+    /* メンバーグリッド */
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .member-card {
+      background: #16213e;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .member-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    .member-detail {
+      font-size: 12px;
+      color: #a0aec0;
+    }
+
+    /* フッター */
+    .footer {
+      border-top: 1px solid #2d3748;
+      padding-top: 14px;
+      font-size: 12px;
+      color: #718096;
+    }
+    .footer a {
+      color: #63b3ed;
+      text-decoration: underline;
+    }
+    .footer-project {
+      margin-left: 16px;
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="header-title">⚠ 今日・5日以内の〆切タスク確認</div>
+    <div class="header-meta" id="header-meta">🗂 Land CS チーム　📅 読み込み中...</div>
+  </div>
+
+  <!-- サマリーカード -->
+  <div class="summary-grid">
+    <div class="summary-card" style="border-left: 4px solid #e74c3c;">
+      <span class="summary-icon">🔴</span>
+      <span class="summary-label">期限切れ</span>
+      <span class="summary-value red">3</span>
+    </div>
+    <div class="summary-card" style="border-left: 4px solid #e74c3c;">
+      <span class="summary-icon">🔴</span>
+      <span class="summary-label">今日〆切</span>
+      <span class="summary-value red">6</span>
+    </div>
+    <div class="summary-card" style="border-left: 4px solid #718096;">
+      <span class="summary-icon">⏰</span>
+      <span class="summary-label">5日以内</span>
+      <span class="summary-value gray">14</span>
+    </div>
+    <div class="summary-card" style="border-left: 4px solid #718096;">
+      <span class="summary-icon">👥</span>
+      <span class="summary-label">担当者数</span>
+      <span class="summary-value gray">7</span>
+    </div>
+  </div>
+
+  <!-- 🔴 緊急メンバー -->
+  <div class="section">
+    <div class="section-title">
+      🔴 緊急メンバー（期限切れまたは今日〆切あり）
+      <span class="section-count">（3名）</span>
+    </div>
+    <div class="member-grid">
+      <div class="member-card">
+        <div class="member-name">🔴 田中 一郎</div>
+        <div class="member-detail">期限切れ2件・今日1件・5日以内1件</div>
+      </div>
+      <div class="member-card">
+        <div class="member-name">🔴 佐藤 花子</div>
+        <div class="member-detail">期限切れ1件・今日2件・5日以内2件</div>
+      </div>
+      <div class="member-card">
+        <div class="member-name">🔴 鈴木 次郎</div>
+        <div class="member-detail">今日3件・5日以内1件</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🟡 注意メンバー -->
+  <div class="section">
+    <div class="section-title">
+      🟡 注意メンバー（5日以内3件以上）
+      <span class="section-count">（2名）</span>
+    </div>
+    <div class="member-grid">
+      <div class="member-card">
+        <div class="member-name">🟡 山田 三枝</div>
+        <div class="member-detail">5日以内4件</div>
+      </div>
+      <div class="member-card">
+        <div class="member-name">🟡 伊藤 健太</div>
+        <div class="member-detail">5日以内3件</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🟢 順調メンバー -->
+  <div class="section">
+    <div class="section-title">
+      🟢 順調メンバー（期限タスク1件以上・緊急/注意以外）
+      <span class="section-count">（2名）</span>
+    </div>
+    <div class="member-grid">
+      <div class="member-card">
+        <div class="member-name">🟢 渡辺 めぐみ</div>
+        <div class="member-detail">5日以内2件</div>
+      </div>
+      <div class="member-card">
+        <div class="member-name">🟢 松本 翔</div>
+        <div class="member-detail">5日以内1件</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    🗂 詳細はこちら → <a href="#">詳細ダッシュボード</a>
+    <span class="footer-project">PROJECT: BRAND_ENTRY</span>
+  </div>
+
+</div>
+
+<script>
+  // 今日の日付を動的に表示
+  const WEEKDAY_JA = ["月", "火", "水", "木", "金", "土", "日"];
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = String(today.getMonth() + 1).padStart(2, "0");
+  const d = String(today.getDate()).padStart(2, "0");
+  const wd = WEEKDAY_JA[today.getDay() === 0 ? 6 : today.getDay() - 1];
+  document.getElementById("header-meta").textContent =
+    `🗂 Land CS チーム　📅 ${y}/${m}/${d}（${wd}）朝 8:00`;
+</script>
+</body>
+</html>
