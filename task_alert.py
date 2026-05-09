@@ -380,7 +380,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
         signal = member["signal"]
         border_color = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#22c55e")
         dot_color    = {"red": "#ef4444", "yellow": "#eab308", "green": "#22c55e"}.get(signal, "#22c55e")
-        badge_label  = {"red": "危険", "yellow": "注意", "green": "安全"}.get(signal, "安全")
+        badge_label  = {"red": "緊急", "yellow": "注意", "green": "順調"}.get(signal, "安全")
         total = member["total"]
 
         # チケット行（期限切れは赤色表示）
@@ -434,7 +434,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     chart_today_js   = json.dumps([m["today"]   for m in sorted_members])
     chart_soon_js    = json.dumps([m["soon"] + m["tomorrow"] for m in sorted_members])
     chart_ok_js      = json.dumps([m["ok"]     for m in sorted_members])
-    chart_height     = max(300, len(sorted_members) * 40)
+    chart_height     = max(300, len(sorted_members) * 28)
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -613,15 +613,16 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     data: {{
       labels: {chart_labels_js},
       datasets: [
-        {{ label: '5日以内',  data: {chart_soon_js},    backgroundColor: '#ca8a04' }},
-        {{ label: '6日以上',  data: {chart_ok_js},      backgroundColor: '#16a34a' }},
-        {{ label: '今日〆切', data: {chart_today_js},   backgroundColor: '#f97316' }},
-        {{ label: '期限切れ', data: {chart_overdue_js}, backgroundColor: '#dc2626' }},
-      ],
+  {{ label: '6日以上',  data: {chart_ok_js},      backgroundColor: '#16a34a' }},
+  {{ label: '5日以内',  data: {chart_soon_js},    backgroundColor: '#ca8a04' }},
+  {{ label: '今日〆切', data: {chart_today_js},   backgroundColor: '#f97316' }},
+  {{ label: '期限切れ', data: {chart_overdue_js}, backgroundColor: '#dc2626' }},
+],
     }},
     options: {{
-      indexAxis: 'y',
-      responsive: true,
+  indexAxis: 'y',
+  responsive: true,
+  barThickness: 14,
       plugins: {{
         legend: {{
           position: 'top',
@@ -637,11 +638,11 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
               const ds  = items[0].chart.data.datasets;
               // datasets順: 5日以内[0], 6日以上[1], 今日〆切[2], 期限切れ[3]
               return [
-                '期限切れ: ' + ds[3].data[idx] + '件',
-                '今日〆切: ' + ds[2].data[idx] + '件',
-                '5日以内: '  + ds[0].data[idx] + '件',
-                '6日以上: '  + ds[1].data[idx] + '件',
-              ];
+  '期限切れ: ' + ds[3].data[idx] + '件',
+  '今日〆切: ' + ds[2].data[idx] + '件',
+  '5日以内: '  + ds[1].data[idx] + '件',
+  '6日以上: '  + ds[0].data[idx] + '件',
+];
             }},
           }},
           backgroundColor: '#fff',
