@@ -104,9 +104,9 @@ def classify_issue(due_date) -> str:
         return "ok"
 
 
-def determine_signal(overdue: int, soon: int, has_deadline: bool) -> str:
+def determine_signal(overdue: int, today: int, soon: int, has_deadline: bool) -> str:
     """信号色を決定する"""
-    if overdue >= 1:
+    if overdue >= 1 or today >= 1:
         return "red"
     if soon >= CAUTION_COUNT:
         return "yellow"
@@ -169,7 +169,7 @@ def aggregate_by_assignee(issues: list) -> list:
         if deadline_count == 0:
             continue
         soon_total = member["overdue"] + member["today"] + member["tomorrow"] + member["soon"]
-        member["signal"] = determine_signal(member["overdue"], soon_total, deadline_count > 0)
+        member["signal"] = determine_signal(member["overdue"], member["today"], soon_total, deadline_count > 0)
         results.append(member)
 
     signal_order = {"red": 0, "yellow": 1, "green": 2, "none": 3}
