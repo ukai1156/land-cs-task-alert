@@ -302,7 +302,7 @@
   <div class="tab3-heading">📊 メンバー別ワークロード（積み上げ横棒グラフ）</div>
   <div class="tab3-subtext">タスク数の多い順に並べています。</div>
   <div class="chart-container">
-    <canvas id="workloadChart" height="336"></canvas>
+    <canvas id="workloadChart" height="432"></canvas>
   </div>
 </div>
 
@@ -352,13 +352,15 @@
     options: {
   indexAxis: 'y',
   responsive: true,
-  barThickness: 14,
+  categoryPercentage: 0.8,
+  barPercentage: 0.9,
       plugins: {
-        legend: {
-          position: 'top',
-          align: 'start',
-          labels: { boxWidth: 14, color: '#374151', padding: 16 }
-        },
+  legend: {
+    position: 'top',
+    align: 'start',
+    reverse: true,   # ← これを追加！
+    labels: { boxWidth: 14, color: '#374151', padding: 16 }
+  },
         tooltip: {
           callbacks: {
             title: (items) => items[0].label,
@@ -366,7 +368,7 @@
             afterBody: (items) => {
               const idx = items[0].dataIndex;
               const ds  = items[0].chart.data.datasets;
-              // datasets順: 5日以内[0], 6日以上[1], 今日〆切[2], 期限切れ[3]
+              // datasets順: 6日以上[0], 5日以内[1], 今日〆切[2], 期限切れ[3]
               return [
   '期限切れ: ' + ds[3].data[idx] + '件',
   '今日〆切: ' + ds[2].data[idx] + '件',
