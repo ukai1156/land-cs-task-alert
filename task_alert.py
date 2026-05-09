@@ -426,7 +426,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     chart_today_js   = json.dumps([m["today"]   for m in sorted_members])
     chart_soon_js    = json.dumps([m["soon"] + m["tomorrow"] for m in sorted_members])
     chart_ok_js      = json.dumps([m["ok"]     for m in sorted_members])
-    chart_height     = max(300, len(sorted_members) * 38)
+    chart_height     = max(300, len(sorted_members) * 44)
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -506,7 +506,19 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
   /* ── タブ3 ── */
   .tab3-heading {{ font-size:17px;font-weight:bold;color:#1e293b;margin-bottom:6px;padding-left:12px;border-left:4px solid #1e3a8a; }}
   .tab3-subtext {{ font-size:13px;color:#64748b;margin-bottom:16px; }}
-  .chart-container {{ background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.08); }}
+  /* ワークロードグラフ：縦スクロール対応 */
+  .chart-wrapper {{
+    background:#fff;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.08);
+    overflow-y: auto;
+  }}
+  .chart-container {{
+    position: relative;
+    width: 100%;
+    height: {chart_height}px;
+  }}
 
   /* ── フッター ── */
   .page-footer {{ text-align:right;color:#64748b;font-size:12px;padding:20px 32px 28px; }}
@@ -563,8 +575,10 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
 <div id="tab3" class="tab-content">
   <div class="tab3-heading">📊 メンバー別ワークロード（積み上げ横棒グラフ）</div>
   <div class="tab3-subtext">タスク数の多い順に並べています。</div>
-  <div class="chart-container">
-    <canvas id="workloadChart" height="{chart_height}"></canvas>
+  <div class="chart-wrapper">
+    <div class="chart-container">
+      <canvas id="workloadChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -614,7 +628,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     options: {{
       indexAxis: 'y',
       responsive: true,
-      barThickness: 22,
+      barThickness: 20,
       plugins: {{
         legend: {{
           position: 'top',
