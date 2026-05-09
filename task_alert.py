@@ -434,7 +434,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     chart_today_js   = json.dumps([m["today"]   for m in sorted_members])
     chart_soon_js    = json.dumps([m["soon"] + m["tomorrow"] for m in sorted_members])
     chart_ok_js      = json.dumps([m["ok"]     for m in sorted_members])
-    chart_height     = max(300, len(sorted_members) * 28)
+    chart_height     = max(300, len(sorted_members) * 36)
 
     return f"""<!DOCTYPE html>
 <html lang="ja">
@@ -622,13 +622,15 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
     options: {{
   indexAxis: 'y',
   responsive: true,
-  barThickness: 14,
+  categoryPercentage: 0.8,
+  barPercentage: 0.9,
       plugins: {{
-        legend: {{
-          position: 'top',
-          align: 'start',
-          labels: {{ boxWidth: 14, color: '#374151', padding: 16 }}
-        }},
+  legend: {{
+    position: 'top',
+    align: 'start',
+    reverse: true,   # ← これを追加！
+    labels: {{ boxWidth: 14, color: '#374151', padding: 16 }}
+  }},
         tooltip: {{
           callbacks: {{
             title: (items) => items[0].label,
@@ -636,7 +638,7 @@ def generate_dashboard_html(members_data: list, summary: dict) -> str:
             afterBody: (items) => {{
               const idx = items[0].dataIndex;
               const ds  = items[0].chart.data.datasets;
-              // datasets順: 5日以内[0], 6日以上[1], 今日〆切[2], 期限切れ[3]
+              // datasets順: 6日以上[0], 5日以内[1], 今日〆切[2], 期限切れ[3]
               return [
   '期限切れ: ' + ds[3].data[idx] + '件',
   '今日〆切: ' + ds[2].data[idx] + '件',
