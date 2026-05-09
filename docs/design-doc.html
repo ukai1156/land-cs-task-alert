@@ -1,337 +1,315 @@
-import React, { useMemo } from "react";
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔴🟡🟢 報告自動化ツール 設計ドキュメント</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #f9f9f9; font-family: Arial, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", メイリオ, Meiryo, sans-serif; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #dfe4f0; padding: 8px 12px; font-size: 14px; color: #303030; text-align: left; }
+th { background: #eef1f8; font-weight: bold; color: #101010; width: 180px; }
+tr:nth-child(even) td { background: #f5f7fc; }
 
-const DS = {
-  bg: "#ffffff",
-  pageBg: "#f9f9f9",
-  cardBg: "#eef1f8",
-  border: "#dfe4f0",
-  shadow: "0px 2px 4px 0px rgba(0,0,0,.25)",
-  radius: "8px",
-  primaryBlue: "#3569c0",
-  darkBlue: "#0c419a",
-  textDefault: "#303030",
-  textHeading: "#101010",
-};
+.header { background: #0c419a; padding: 36px 24px; text-align: center; }
+.header-title { color: #fff; font-size: 22px; font-weight: bold; margin: 0 0 8px; }
+.header-sub { color: #b8ccf0; font-size: 15px; margin: 0 0 6px; }
+.header-date { color: #8aa8d8; font-size: 13px; margin: 0; }
 
-const globalStyle = `
-  *, *::before, *::after { box-sizing: border-box; }
-  body { margin: 0; background: ${DS.pageBg}; font-family: Arial, "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", メイリオ, Meiryo, sans-serif; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border: 1px solid ${DS.border}; padding: 8px 12px; font-size: 14px; color: ${DS.textDefault}; text-align: left; }
-  th { background: ${DS.cardBg}; font-weight: bold; color: ${DS.textHeading}; }
-  tr:nth-child(even) td { background: #f5f7fc; }
-`;
+.main-content { max-width: 1070px; margin: 0 auto; padding: 40px 24px 0; background: #ffffff; box-shadow: 0px 2px 4px 0px rgba(0,0,0,.25); border-radius: 0 0 8px 8px; }
 
-const SectionTitle: React.FC<{ num: string; title: string }> = ({ num, title }) => (
-  <h2 style={{ fontSize: 18, fontWeight: "bold", color: DS.textHeading, display: "flex", alignItems: "center", gap: 8, marginBottom: 18, marginTop: 0 }}>
-    <span style={{ background: DS.primaryBlue, color: "#fff", borderRadius: 4, padding: "2px 8px", fontSize: 13, fontWeight: "bold" }}>{num}</span>
-    {title}
-  </h2>
-);
+.section-title { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: bold; color: #101010; margin: 0 0 18px; }
+.section-num { background: #3569c0; color: #fff; border-radius: 4px; padding: 2px 8px; font-size: 13px; font-weight: bold; }
 
-const Card: React.FC<{ children: React.ReactNode; style?: React.CSSProperties }> = ({ children, style }) => (
-  <div style={{ background: DS.cardBg, border: `1px solid ${DS.border}`, borderRadius: DS.radius, boxShadow: DS.shadow, padding: 20, ...style }}>
-    {children}
-  </div>
-);
+.card { background: #eef1f8; border: 1px solid #dfe4f0; border-radius: 8px; box-shadow: 0px 2px 4px 0px rgba(0,0,0,.25); padding: 20px; }
+.divider { border: none; border-top: 1px solid #dfe4f0; margin: 36px 0; }
 
-const Divider: React.FC = () => (
-  <div style={{ borderTop: `1px solid ${DS.border}`, margin: "36px 0" }} />
-);
+.flow-container { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; justify-content: center; }
+.flow-card { flex: 1; min-width: 160px; max-width: 220px; text-align: center; padding: 20px 12px; }
+.flow-arrow { font-size: 22px; color: #3569c0; flex-shrink: 0; }
+.flow-icon { font-size: 28px; margin-bottom: 6px; }
+.flow-part { font-size: 13px; color: #3569c0; font-weight: bold; margin-bottom: 4px; }
+.flow-label { font-size: 14px; font-weight: bold; color: #101010; margin-bottom: 4px; }
+.flow-desc { font-size: 13px; color: #303030; margin: 0; }
 
-const Section1: React.FC = () => {
-  const parts = useMemo(() => [
-    { icon: "⏰", num: "パーツ①", label: "トリガー", desc: "毎日 朝8:00（JST）月〜金" },
-    { icon: "📦", num: "パーツ②", label: "ソース元", desc: "Backlog API" },
-    { icon: "⚙️", num: "パーツ③", label: "処理する場所", desc: "Python スクリプト" },
-    { icon: "📤", num: "パーツ④", label: "届ける先", desc: "Slack + ダッシュボード" },
-  ], []);
-  return (
-    <section>
-      <SectionTitle num="1" title="全体フロー図" />
-      <p style={{ fontSize: 14, color: DS.textDefault, marginBottom: 20 }}>4つのパーツが連携して毎朝チームに自動報告を届けます。</p>
-      <div style={{ display: "flex", alignItems: "center", gap: 0, flexWrap: "wrap", justifyContent: "center" }}>
-        {parts.map((p, i) => (
-          <React.Fragment key={p.num}>
-            <Card style={{ flex: 1, minWidth: 160, maxWidth: 220, textAlign: "center", padding: "20px 12px" }}>
-              <div style={{ fontSize: 28, marginBottom: 6 }}>{p.icon}</div>
-              <div style={{ fontSize: 13, color: DS.primaryBlue, fontWeight: "bold", marginBottom: 4 }}>{p.num}</div>
-              <div style={{ fontSize: 14, fontWeight: "bold", color: DS.textHeading, marginBottom: 4 }}>{p.label}</div>
-              <div style={{ fontSize: 13, color: DS.textDefault }}>{p.desc}</div>
-            </Card>
-            {i < parts.length - 1 && (
-              <div style={{ fontSize: 22, color: DS.primaryBlue, padding: "0 8px" }}>→</div>
-            )}
-          </React.Fragment>
-        ))}
+.detail-cards { display: flex; flex-direction: column; gap: 20px; }
+.detail-card-title { font-size: 16px; font-weight: bold; color: #0c419a; margin: 0 0 12px; }
+
+.slack-preview { background: #1a1a2e; border: 1px solid #333; border-radius: 8px; padding: 20px; margin-top: 16px; }
+.slack-preview-label { color: #a0c4ff; font-size: 13px; margin-bottom: 12px; }
+.slack-inner { background: #23233a; border-radius: 6px; padding: 16px; color: #e0e0e0; }
+.slack-date { font-size: 14px; margin: 0 0 6px; }
+.slack-team { font-size: 14px; margin: 0 0 6px; }
+.slack-warn { color: #ffd700; font-size: 15px; margin: 0 0 16px; }
+.slack-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.slack-badge { background: #2d2d4e; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 90px; }
+.badge-label { font-size: 12px; color: #a0a0c0; display: block; margin-bottom: 3px; }
+.badge-count-red { color: #c0392b; font-weight: bold; font-size: 16px; display: block; }
+.badge-count-yellow { color: #d68910; font-weight: bold; font-size: 16px; display: block; }
+.badge-count-blue { color: #3569c0; font-weight: bold; font-size: 16px; display: block; }
+.slack-section { margin-bottom: 10px; }
+.slack-section-red { border-left: 4px solid #e74c3c; padding-left: 12px; }
+.slack-section-yellow { border-left: 4px solid #f39c12; padding-left: 12px; }
+.slack-section-green { border-left: 4px solid #27ae60; padding-left: 12px; }
+.slack-section p { margin: 0; font-size: 14px; color: #e0e0e0; }
+.slack-footer { color: #5dade2; font-size: 13px; margin-top: 14px; }
+
+.signal-cards { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.signal-card { flex: 1; min-width: 200px; border-radius: 8px; padding: 16px; }
+.signal-card-red { background: #fdf2f2; border: 2px solid #c0392b; }
+.signal-card-yellow { background: #fefdf2; border: 2px solid #d68910; }
+.signal-card-green { background: #f2fdf5; border: 2px solid #1e8449; }
+.signal-title { font-size: 15px; font-weight: bold; margin: 0 0 8px; }
+.signal-desc { font-size: 14px; color: #303030; margin: 0; }
+.signal-note { font-size: 12px; color: #888; margin: 6px 0 0; }
+.signal-supplement { background: #f0f4fc; border: 1px solid #dfe4f0; border-radius: 8px; padding: 14px 16px; font-size: 14px; color: #303030; }
+
+.timeline { position: relative; padding-left: 36px; }
+.timeline::before { content: ''; position: absolute; left: 14px; top: 0; bottom: 0; width: 2px; background: #dfe4f0; }
+.timeline-item { position: relative; margin-bottom: 16px; }
+.timeline-dot { position: absolute; left: -29px; top: 6px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #fff; }
+.dot-done { background: #3569c0; border: 2px solid #3569c0; }
+.dot-next { background: #f39c12; border: 2px solid #f39c12; }
+.timeline-card { padding: 12px 16px; border-radius: 8px; }
+.card-done { background: #eef1f8; border: 1px solid #dfe4f0; }
+.card-next { background: #fffbf0; border: 1px solid #f39c12; box-shadow: 0px 2px 6px rgba(243,156,18,0.2); }
+.step-inner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.step-num { font-size: 13px; font-weight: bold; color: #3569c0; }
+.step-status-done { font-size: 13px; color: #27ae60; }
+.step-status-next { font-size: 13px; color: #d68910; font-weight: bold; }
+.step-label-done { font-size: 15px; color: #303030; }
+.step-label-next { font-size: 15px; color: #303030; font-weight: bold; }
+
+.footer-section { text-align: center; padding: 40px 0 32px; }
+.footer-credit { font-size: 14px; color: #303030; margin: 0 0 4px; }
+.footer-date { font-size: 12px; color: #888; margin: 0; }
+.desc-text { font-size: 14px; color: #303030; margin: 0 0 16px; }
+code { background: #eef1f8; padding: 1px 5px; border-radius: 3px; font-size: 13px; font-family: monospace; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1 class="header-title">🔴🟡🟢 報告自動化ツール 設計ドキュメント</h1>
+  <p class="header-sub">チームタスク進捗の自動可視化・通知フロー</p>
+  <p class="header-date">作成日：2026年4月26日　最終更新：2026年4月29日</p>
+</header>
+
+<div class="main-content">
+
+  <!-- セクション1 -->
+  <section>
+    <h2 class="section-title"><span class="section-num">1</span>全体フロー図</h2>
+    <p class="desc-text">4つのパーツが連携して毎朝チームに自動報告を届けます。</p>
+    <div class="flow-container">
+      <div class="card flow-card">
+        <div class="flow-icon">⏰</div>
+        <div class="flow-part">パーツ①</div>
+        <div class="flow-label">トリガー</div>
+        <p class="flow-desc">毎日 朝8:00（JST）月〜金</p>
       </div>
-    </section>
-  );
-};
-
-const Section2: React.FC = () => (
-  <section>
-    <SectionTitle num="2" title="4パーツ 詳細カード" />
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-      <Card>
-        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ① トリガー</div>
-        <table>
-          <tbody>
-            <tr><th>種類</th><td>時間トリガー</td></tr>
-            <tr><th>実行タイミング</th><td>毎日 朝8:00（JST）自動実行</td></tr>
-            <tr><th>対象日</th><td><strong>月〜金（土日除く）</strong></td></tr>
-            <tr><th>将来拡張案</th><td>進捗会の前日など追加トリガーも検討可</td></tr>
-          </tbody>
-        </table>
-      </Card>
-      <Card>
-        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ② ソース元</div>
-        <table>
-          <tbody>
-            <tr><th>ツール</th><td>Backlog API</td></tr>
-            <tr><th>対象プロジェクト</th><td>特定の1プロジェクト</td></tr>
-            <tr><th>取得対象チケット</th><td><strong>親チケットのみ</strong>（ステータスが「完了以外」のもの）※現在はMVP。将来的に子チケット対応予定</td></tr>
-            <tr><th>主なデータ項目</th><td>担当者名・タスク名・〆切日・ステータス</td></tr>
-            <tr><th>認証方法</th><td>APIキー（チームのBacklogスペースで発行）</td></tr>
-            <tr><th>補足</th><td>最新データはBacklog側に保管。毎回APIで取得する</td></tr>
-          </tbody>
-        </table>
-      </Card>
-      <Card>
-        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ③ 処理する場所</div>
-        <table>
-          <tbody>
-            <tr><th>実行環境</th><td><strong>GitHub Actions</strong>（ubuntu-latest）</td></tr>
-            <tr><th>処理①</th><td>集計：担当者別に〆切タスクを集計（今日・5日以内・期限切れ）</td></tr>
-            <tr><th>処理②</th><td>判定：信号機ロジックで緊急度を判定（下記ロジック参照）</td></tr>
-            <tr><th>処理③（現在）</th><td><strong>Slack Block Kit テキスト形式</strong>で投稿</td></tr>
-            <tr><th>処理③（将来）</th><td><strong>Playwright → HTMLスクリーンショット → 画像投稿</strong> ⬜ 予定</td></tr>
-            <tr><th>処理④</th><td>データ整形：詳細ダッシュボード用のデータを整形・出力</td></tr>
-          </tbody>
-        </table>
-      </Card>
-      <Card>
-        <div style={{ fontWeight: "bold", fontSize: 15, color: DS.textHeading, marginBottom: 12 }}>パーツ④ 届ける先</div>
-        <table>
-          <tbody>
-            <tr><th>届け先①</th><td>Slack <code style={{ background: "#e8ecf4", padding: "1px 5px", borderRadius: 3 }}>#wincs-cs</code> チャンネルに投稿</td></tr>
-            <tr><th>届け先②</th><td>詳細ダッシュボード（WxHub / HTML）へのURLリンクをSlack投稿に添付</td></tr>
-            <tr><th>@channelメンション</th><td><strong>なし</strong>（現状採用）</td></tr>
-            <tr><th>受け取る人</th><td>チームメンバー全員（約30名）</td></tr>
-            <tr><th>各担当者の目的</th><td>自分の〆切タスクを把握して危機感を持ち、詳細ダッシュボードを見に行く</td></tr>
-            <tr><th>チームリーダーの目的</th><td>ワークロードバランスを確認し、助け合いのアクションを取る</td></tr>
-          </tbody>
-        </table>
-      </Card>
-    </div>
-  </section>
-);
-
-const Section3: React.FC = () => (
-  <section>
-    <SectionTitle num="3" title="Slack投稿仕様" />
-    <Card style={{ marginBottom: 20 }}>
-      <table>
-        <tbody>
-          <tr><th>投稿チャンネル</th><td><code style={{ background: "#e8ecf4", padding: "1px 5px", borderRadius: 3 }}>#wincs-cs</code></td></tr>
-          <tr><th>投稿タイミング</th><td>毎日 朝8:00（JST）月〜金</td></tr>
-        </tbody>
-      </table>
-    </Card>
-    <div style={{ background: "#1a1a2e", border: "1px solid #333", borderRadius: DS.radius, padding: 20 }}>
-      <div style={{ color: "#a0c4ff", fontSize: 13, marginBottom: 12 }}>投稿プレビュー（イメージ）</div>
-      <div style={{ background: "#23233a", borderRadius: 6, padding: 16, color: "#e0e0e0" }}>
-        <div style={{ marginBottom: 6, fontSize: 14 }}>📅 <strong>2026/04/26 朝</strong></div>
-        <div style={{ marginBottom: 6, fontSize: 14 }}>🏢 <strong>Land CS チーム</strong></div>
-        <div style={{ color: "#ffd700", fontSize: 15, marginBottom: 16 }}>⚠ 今日・5日以内の〆切タスク確認</div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-          {[
-            { icon: "🚨", label: "期限切れ", color: "#c0392b" },
-            { icon: "🔴", label: "今日〆切", color: "#c0392b" },
-            { icon: "⏰", label: "5日以内", color: "#d68910" },
-            { icon: "👥", label: "担当者数", color: "#3569c0" },
-          ].map((b) => (
-            <div key={b.label} style={{ background: "#2d2d4e", borderRadius: 6, padding: "8px 14px", textAlign: "center", minWidth: 90 }}>
-              <div style={{ fontSize: 13 }}>{b.icon} <span style={{ color: b.color, fontWeight: "bold" }}>N件</span></div>
-              <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>{b.label}</div>
-            </div>
-          ))}
-        </div>
-        {[
-          { icon: "🔴", label: "緊急セクション", border: "#e74c3c", desc: "期限切れ・今日〆切あり" },
-          { icon: "🟡", label: "注意セクション", border: "#f39c12", desc: "5日以内3件以上" },
-          { icon: "🟢", label: "順調セクション", border: "#27ae60", desc: "期限タスク1件以上・緊急/注意以外" },
-        ].map((s) => (
-          <div key={s.label} style={{ borderLeft: `4px solid ${s.border}`, paddingLeft: 12, marginBottom: 10 }}>
-            <div style={{ fontSize: 13, fontWeight: "bold" }}>{s.icon} {s.label}</div>
-            <div style={{ fontSize: 12, color: "#aaa" }}>{s.desc}</div>
-          </div>
-        ))}
-        <div style={{ marginTop: 14, fontSize: 13, color: "#5dade2" }}>
-          📊 詳細ダッシュボードを見る → https://wxhub.example.com/dashboard
-        </div>
+      <div class="flow-arrow">→</div>
+      <div class="card flow-card">
+        <div class="flow-icon">📦</div>
+        <div class="flow-part">パーツ②</div>
+        <div class="flow-label">ソース元</div>
+        <p class="flow-desc">Backlog API</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="card flow-card">
+        <div class="flow-icon">⚙️</div>
+        <div class="flow-part">パーツ③</div>
+        <div class="flow-label">処理する場所</div>
+        <p class="flow-desc">Python スクリプト</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="card flow-card">
+        <div class="flow-icon">📤</div>
+        <div class="flow-part">パーツ④</div>
+        <div class="flow-label">届ける先</div>
+        <p class="flow-desc">Slack + ダッシュボード</p>
       </div>
     </div>
   </section>
-);
 
-const Section4: React.FC = () => (
+  <hr class="divider">
+
+  <!-- セクション2 -->
   <section>
-    <SectionTitle num="4" title="詳細ダッシュボード 機能一覧" />
-    <p style={{ fontSize: 14, color: DS.textDefault, marginBottom: 16 }}>優先度順に実装予定の機能一覧：</p>
-    <Card>
-      <table>
-        <thead>
-          <tr><th style={{ width: 60 }}>優先度</th><th>機能</th><th>内容</th></tr>
-        </thead>
-        <tbody>
-          {[
-            ["①", "今日・明日〆切タスク一覧", "担当者名・タスク名・〆切日"],
-            ["②", "メンバー別タスク一覧", "タスク名・〆切日"],
-            ["③", "Backlogへの直接リンク", "タスク名クリックでBacklogチケットに遷移"],
-            ["④", "ワークロードグラフ", "棒グラフで全員のタスク数を比較"],
-            ["⑤", "担当者フィルター", "特定の人のタスクだけ絞り込み"],
-            ["⑥", "期限切れタスク一覧", "担当者名・タスク名・本来の〆切日"],
-          ].map(([p, f, c]) => (
-            <tr key={p}>
-              <td style={{ textAlign: "center", fontWeight: "bold", color: DS.primaryBlue }}>{p}</td>
-              <td>{f}</td>
-              <td>{c}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Card>
+    <h2 class="section-title"><span class="section-num">2</span>4パーツ 詳細カード</h2>
+    <div class="detail-cards">
+      <div class="card">
+        <h3 class="detail-card-title">⏰ パーツ① トリガー</h3>
+        <table>
+          <tr><th>種類</th><td>時間トリガー</td></tr>
+          <tr><th>実行タイミング</th><td>毎日 朝8:00（JST）自動実行</td></tr>
+          <tr><th>対象日</th><td><strong>月〜金（土日除く）</strong></td></tr>
+          <tr><th>将来拡張案</th><td>進捗会の前日など追加トリガーも検討可</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="detail-card-title">📦 パーツ② ソース元</h3>
+        <table>
+          <tr><th>ツール</th><td>Backlog API</td></tr>
+          <tr><th>対象プロジェクト</th><td>特定の1プロジェクト</td></tr>
+          <tr><th>取得対象チケット</th><td><strong>親チケットのみ</strong>（ステータスが「完了以外」のもの）<br><small>※現在はMVP。将来的に子チケット対応予定</small></td></tr>
+          <tr><th>主なデータ項目</th><td>担当者名・タスク名・〆切日・ステータス</td></tr>
+          <tr><th>認証方法</th><td>APIキー（チームのBacklogスペースで発行）</td></tr>
+          <tr><th>補足</th><td>最新データはBacklog側に保管。毎回APIで取得する</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="detail-card-title">⚙️ パーツ③ 処理する場所</h3>
+        <table>
+          <tr><th>実行環境</th><td><strong>GitHub Actions</strong>（ubuntu-latest）</td></tr>
+          <tr><th>処理①</th><td>集計：担当者別に〆切タスクを集計（今日・5日以内・期限切れ）</td></tr>
+          <tr><th>処理②</th><td>判定：信号機ロジックで緊急度を判定（下記ロジック参照）</td></tr>
+          <tr><th>処理③（現在）</th><td><strong>Slack Block Kit テキスト形式</strong>で投稿</td></tr>
+          <tr><th>処理③（将来）</th><td><strong>Playwright → HTMLスクリーンショット → 画像投稿</strong> ⬜ 予定</td></tr>
+          <tr><th>処理④</th><td>データ整形：詳細ダッシュボード用のデータを整形・出力</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3 class="detail-card-title">📤 パーツ④ 届ける先</h3>
+        <table>
+          <tr><th>届け先①</th><td>Slack <code>#wincs-cs</code> チャンネルに投稿</td></tr>
+          <tr><th>届け先②</th><td>詳細ダッシュボード（WxHub / HTML）へのURLリンクをSlack投稿に添付</td></tr>
+          <tr><th>@channelメンション</th><td><strong>なし</strong>（現状採用）</td></tr>
+          <tr><th>受け取る人</th><td>チームメンバー全員（約30名）</td></tr>
+          <tr><th>各担当者の目的</th><td>自分の〆切タスクを把握して危機感を持ち、詳細ダッシュボードを見に行く</td></tr>
+          <tr><th>チームリーダーの目的</th><td>ワークロードバランスを確認し、助け合いのアクションを取る</td></tr>
+        </table>
+      </div>
+    </div>
   </section>
-);
 
-const Section5: React.FC = () => (
+  <hr class="divider">
+
+  <!-- セクション3 -->
   <section>
-    <SectionTitle num="5" title="信号機ロジック 判定基準" />
-    <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
-      <Card style={{ flex: 1, minWidth: 200, background: "#fdf2f2", border: "2px solid #c0392b" }}>
-        <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>🔴 赤：緊急</div>
-        <div style={{ fontSize: 14, color: DS.textDefault }}>今日〆切 または 期限切れのタスクがある</div>
-      </Card>
-      <Card style={{ flex: 1, minWidth: 200, background: "#fefdf2", border: "2px solid #d68910" }}>
-        <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>🟡 黄：注意</div>
-        <div style={{ fontSize: 14, color: DS.textDefault }}>5日以内に〆切のタスクが <strong>3件以上</strong> ある</div>
-        <div style={{ fontSize: 12, color: "#888", marginTop: 6 }}>※現状採用</div>
-      </Card>
-      <Card style={{ flex: 1, minWidth: 200, background: "#f2fdf5", border: "2px solid #1e8449" }}>
-        <div style={{ fontSize: 16, fontWeight: "bold", marginBottom: 8 }}>🟢 緑：順調</div>
-        <div style={{ fontSize: 14, color: DS.textDefault }}>期限タスクが1件以上あり、緊急・注意に該当しない</div>
-        <div style={{ fontSize: 12, color: "#888", marginTop: 6 }}>※変更済み：タスクなしメンバーは対象外</div>
-      </Card>
-    </div>
-    <Card style={{ background: "#f0f4fc" }}>
-      <div style={{ fontSize: 14, color: DS.textDefault }}>
-        🟢 <strong>順調の対象：</strong> 期限タスクが1件以上あるメンバーのうち、🔴・🟡に該当しないメンバー。タスクが割り当てられていないメンバーはカウント対象外。
+    <h2 class="section-title"><span class="section-num">3</span>Slack投稿仕様</h2>
+    <table>
+      <tr><td style="width:180px;background:#eef1f8;font-weight:bold;color:#101010;">投稿チャンネル</td><td><code>#wincs-cs</code></td></tr>
+      <tr><td style="width:180px;background:#eef1f8;font-weight:bold;color:#101010;">投稿タイミング</td><td>毎日 朝8:00（JST）月〜金</td></tr>
+    </table>
+    <div class="slack-preview">
+      <div class="slack-preview-label">投稿プレビュー（イメージ）</div>
+      <div class="slack-inner">
+        <p class="slack-date">📅 <strong>2026/04/26 朝</strong></p>
+        <p class="slack-team">🏢 <strong>Land CS チーム</strong></p>
+        <p class="slack-warn">⚠ 今日・5日以内の〆切タスク確認</p>
+        <div class="slack-badges">
+          <div class="slack-badge"><span class="badge-label">🚨 期限切れ</span><span class="badge-count-red">N件</span></div>
+          <div class="slack-badge"><span class="badge-label">🔴 今日〆切</span><span class="badge-count-red">N件</span></div>
+          <div class="slack-badge"><span class="badge-label">⏰ 5日以内</span><span class="badge-count-yellow">N件</span></div>
+          <div class="slack-badge"><span class="badge-label">👥 担当者数</span><span class="badge-count-blue">N名</span></div>
+        </div>
+        <div class="slack-section slack-section-red"><p>🔴 <strong>緊急セクション</strong>（期限切れ・今日〆切あり）</p></div>
+        <div class="slack-section slack-section-yellow"><p>🟡 <strong>注意セクション</strong>（5日以内3件以上）</p></div>
+        <div class="slack-section slack-section-green"><p>🟢 <strong>順調セクション</strong>（期限タスク1件以上・緊急/注意以外）</p></div>
+        <div class="slack-footer">📊 詳細ダッシュボードを見る → https://wxhub.example.com/dashboard</div>
       </div>
-    </Card>
+    </div>
   </section>
-);
 
-const Section6: React.FC = () => {
-  const steps = useMemo(() => [
-    { step: "STEP 1", status: "✅ 完了", label: "現状整理・課題分解", state: "done" },
-    { step: "STEP 2", status: "✅ 完了", label: "意味の見極め（Backlog標準機能との比較）", state: "done" },
-    { step: "STEP 3", status: "✅ 完了", label: "MVP定義・プロトタイプ作成", state: "done" },
-    { step: "STEP 4", status: "✅ 完了", label: "PoC検証（Backlog API接続・実データ確認）", state: "done" },
-    { step: "STEP 5", status: "✅ 完了", label: "Pythonスクリプト作成", state: "done" },
-    { step: "STEP 6", status: "✅ 完了", label: "Slack連携設定（Block Kitテキスト形式）", state: "done" },
-    { step: "STEP 7", status: "✅ 完了", label: "詳細ダッシュボード 実データ接続", state: "done" },
-    { step: "STEP 8", status: "✅ 完了", label: "Playwright画像投稿への移行", state: "done" },
-    { step: "STEP 9", status: "🔜 次のステップ", label: "本番運用開始（チーム全体へのロールアウト）", state: "next" },
-  ], []);
-  return (
-    <section>
-      <SectionTitle num="6" title="ロードマップ" />
-      <div style={{ position: "relative", paddingLeft: 36 }}>
-        <div style={{ position: "absolute", left: 14, top: 0, bottom: 0, width: 2, background: DS.border }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {steps.map((s) => {
-            const isDone = s.state === "done";
-            const isNext = s.state === "next";
-            return (
-              <div key={s.step} style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 14 }}>
-                <div style={{
-                  position: "absolute", left: -29, top: 6,
-                  width: 18, height: 18, borderRadius: "50%",
-                  background: isDone ? DS.primaryBlue : isNext ? "#f39c12" : DS.border,
-                  border: `2px solid ${isDone ? DS.primaryBlue : isNext ? "#f39c12" : "#bbb"}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  color: "#fff", fontSize: 10, fontWeight: "bold", flexShrink: 0,
-                }}>
-                  {isDone && "✓"}
-                </div>
-                <div style={{
-                  flex: 1, padding: "12px 16px", borderRadius: DS.radius,
-                  background: isNext ? "#fffbf0" : DS.cardBg,
-                  border: `1px solid ${isNext ? "#f39c12" : DS.border}`,
-                  boxShadow: isNext ? "0px 2px 6px rgba(243,156,18,0.2)" : "none",
-                }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                    <span style={{ fontSize: 13, fontWeight: "bold", color: DS.primaryBlue }}>{s.step}</span>
-                    <span style={{ fontSize: 13, color: isDone ? "#27ae60" : "#d68910", fontWeight: isNext ? "bold" : "normal" }}>{s.status}</span>
-                    <span style={{ fontSize: 15, color: DS.textDefault, fontWeight: isNext ? "bold" : "normal" }}>{s.label}</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+  <hr class="divider">
+
+  <!-- セクション4 -->
+  <section>
+    <h2 class="section-title"><span class="section-num">4</span>詳細ダッシュボード 機能一覧</h2>
+    <p class="desc-text">優先度順に実装予定の機能一覧：</p>
+    <table>
+      <thead>
+        <tr><th style="width:60px;">優先度</th><th>機能</th><th>内容</th></tr>
+      </thead>
+      <tbody>
+        <tr><td style="text-align:center;font-weight:bold;color:#3569c0;">①</td><td>今日・明日〆切タスク一覧</td><td>担当者名・タスク名・〆切日</td></tr>
+        <tr><td style="text-align:center;font-weight:bold;color:#3569c0;">②</td><td>メンバー別タスク一覧</td><td>タスク名・〆切日</td></tr>
+        <tr><td style="text-align:center;font-weight:bold;color:#3569c0;">③</td><td>Backlogへの直接リンク</td><td>タスク名クリックでBacklogチケットに遷移</td></tr>
+        <tr><td style="text-align:center;font-weight:bold;color:#3569c0;">④</td><td>ワークロードグラフ</td><td>棒グラフで全員のタスク数を比較</td></tr>
+        <tr><td style="text-align:center;font-weight:bold;color:#3569c0;">⑤</td><td>担当者フィルター</td><td>特定の人のタスクだけ絞り込み</td></tr>
+        <tr><td style="text-align:center;font-weight:bold;color:#3569c0;">⑥</td><td>期限切れタスク一覧</td><td>担当者名・タスク名・本来の〆切日</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <hr class="divider">
+
+  <!-- セクション5 -->
+  <section>
+    <h2 class="section-title"><span class="section-num">5</span>信号機ロジック 判定基準</h2>
+    <div class="signal-cards">
+      <div class="signal-card signal-card-red">
+        <p class="signal-title">🔴 赤：緊急</p>
+        <p class="signal-desc">今日〆切 または 期限切れのタスクがある</p>
       </div>
-    </section>
-  );
-};
-
-const ReportDesignDoc: React.FC = () => (
-  <>
-    <style>{globalStyle}</style>
-    <div style={{ background: DS.pageBg, minHeight: "100vh" }}>
-      {/* Header */}
-      <header style={{ background: DS.darkBlue, padding: "36px 24px", textAlign: "center" }}>
-        <div style={{ fontSize: 22, fontWeight: "bold", color: "#ffffff", marginBottom: 8 }}>
-          🔴🟡🟢 報告自動化ツール 設計ドキュメント
-        </div>
-        <div style={{ fontSize: 15, color: "#b8ccf0", marginBottom: 6 }}>
-          チームタスク進捗の自動可視化・通知フロー
-        </div>
-        <div style={{ fontSize: 13, color: "#8aa8d8" }}>
-          作成日：2026年4月26日　最終更新：2026年5月4日
-        </div>
-      </header>
-
-      {/* Main */}
-      <main style={{
-        maxWidth: 1070,
-        margin: "0 auto",
-        padding: "40px 24px 0",
-        background: DS.bg,
-        boxShadow: DS.shadow,
-        borderRadius: "0 0 8px 8px",
-      }}>
-        <Section1 />
-        <Divider />
-        <Section2 />
-        <Divider />
-        <Section3 />
-        <Divider />
-        <Section4 />
-        <Divider />
-        <Section5 />
-        <Divider />
-        <Section6 />
-
-        {/* Footer */}
-        <div style={{ textAlign: "center", paddingBottom: 32, paddingTop: 40 }}>
-          <div style={{ fontSize: 14, color: DS.textDefault, marginBottom: 4 }}>Land CS チーム</div>
-          <div style={{ fontSize: 12, color: "#888" }}>作成日：2026年4月26日　最終更新：2026年5月4日</div>
-        </div>
-      </main>
+      <div class="signal-card signal-card-yellow">
+        <p class="signal-title">🟡 黄：注意</p>
+        <p class="signal-desc">5日以内に〆切のタスクが <strong>3件以上</strong> ある</p>
+        <p class="signal-note">※現状採用</p>
+      </div>
+      <div class="signal-card signal-card-green">
+        <p class="signal-title">🟢 緑：順調</p>
+        <p class="signal-desc">期限タスクが1件以上あり、緊急・注意に該当しない</p>
+        <p class="signal-note">※変更済み：タスクなしメンバーは対象外</p>
+      </div>
     </div>
-  </>
-);
+    <div class="signal-supplement">
+      🟢 <strong>順調の対象：</strong> 期限タスクが1件以上あるメンバーのうち、🔴・🟡に該当しないメンバー。タスクが割り当てられていないメンバーはカウント対象外。
+    </div>
+  </section>
 
-export default ReportDesignDoc;
+  <hr class="divider">
+
+  <!-- セクション6 -->
+  <section>
+    <h2 class="section-title"><span class="section-num">6</span>ロードマップ</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 1</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">現状整理・課題分解</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 2</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">意味の見極め（Backlog標準機能との比較）</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 3</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">MVP定義・プロトタイプ作成</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 4</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">PoC検証（Backlog API接続・実データ確認）</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 5</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">Pythonスクリプト作成</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 6</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">Slack連携設定（Block Kitテキスト形式）</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 7</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">詳細ダッシュボード 実データ接続</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-done">✓</div>
+        <div class="timeline-card card-done"><div class="step-inner"><span class="step-num">STEP 8</span><span class="step-status-done">✅ 完了</span><span class="step-label-done">Playwright画像投稿への移行</span></div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-next"></div>
+        <div class="timeline-card card-next"><div class="step-inner"><span class="step-num">STEP 9</span><span class="step-status-next">🔜 次のステップ</span><span class="step-label-next">本番運用開始（チーム全体へのロールアウト）</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer-section">
+    <p class="footer-credit">Land CS チーム / 作成：WxHub AI</p>
+    <p class="footer-date">作成日：2026年4月26日　最終更新：2026年4月29日</p>
+  </footer>
+
+</div>
+</body>
+</html>
