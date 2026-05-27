@@ -87,7 +87,7 @@
   .chart-container {
     position: relative;
     width: 100%;
-    height: 1820px;
+    height: 1768px;
   }
 
   /* ── フッター ── */
@@ -99,12 +99,12 @@
 <!-- ヘッダー -->
 <div class="page-header">
   <div class="page-title">🏢 Land CS チーム タスクダッシュボード</div>
-  <div class="page-subtitle">2026/05/25（月） — 全35名 / 101件のタスク</div>
+  <div class="page-subtitle">2026/05/27（水） — 全34名 / 92件のタスク</div>
   <div class="header-badges">
-    <span class="hbadge hbadge-red">期限切れ 12件</span>
-    <span class="hbadge hbadge-orange">今日〆切 3件</span>
-    <span class="hbadge hbadge-yellow">5日以内 58件</span>
-    <span class="hbadge hbadge-green">全35名・101件</span>
+    <span class="hbadge hbadge-red">期限切れ 17件</span>
+    <span class="hbadge hbadge-orange">今日〆切 2件</span>
+    <span class="hbadge hbadge-yellow">5日以内 54件</span>
+    <span class="hbadge hbadge-green">全34名・92件</span>
   </div>
 </div>
 
@@ -119,13 +119,13 @@
 <div id="tab1" class="tab-content active">
   <div class="tab1-heading">⚡ 今日・明日〆切タスク</div>
   <div style="margin-bottom:8px;">
-    <span class="section-label section-label-red">🔴 今日〆切<span class="section-count">3件</span></span>
+    <span class="section-label section-label-red">🔴 今日〆切<span class="section-count">2件</span></span>
   </div>
-  <table class='ticket-table today-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody><tr><td>takaic</td><td>【GYT】受注エントリー：2026年5月以降の延長保守料</td><td class='due-today'>今日</td></tr><tr><td>谷口</td><td>【NHNM】サービス仕様書　作成・確認依頼（2026年7月以降のTGサービス分）</td><td class='due-today'>今日</td></tr><tr><td>谷口</td><td>【NTV】データ配信停止作業依頼：NTV日本テレビ放送網 NNN系列データ放送向け 警報注意報（JMA注警報(nns-warn.csv）配信停止作業</td><td class='due-today'>今日</td></tr></tbody></table>
+  <table class='ticket-table today-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody><tr><td>kida-s</td><td>【HAB】コスト見積もり依頼：緊地・WINCS-WF更新（単独見積）</td><td class='due-today'>今日</td></tr><tr><td>yogawa</td><td>【SDT】受注エントリー：SDT 静岡第一テレビ 防災気象情報の体系整理対応（IoT_APIへの移行対応（全部）</td><td class='due-today'>今日</td></tr></tbody></table>
   <div style="margin-bottom:8px;">
-    <span class="section-label section-label-orange">🟠 明日〆切<span class="section-count">3件</span></span>
+    <span class="section-label section-label-orange">🟠 明日〆切<span class="section-count">6件</span></span>
   </div>
-  <table class='ticket-table tomorrow-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody><tr><td>katsumata</td><td>【TNC】サービス仕様書　作成・確認依頼</td><td class='due-tomorrow'>1日後</td></tr><tr><td>谷口</td><td>【TVS】専任CS同行依頼：Wfb導入に向けた提案（防災気象情報体系整理に絡めたSCCを含め）</td><td class='due-tomorrow'>1日後</td></tr><tr><td>okuda</td><td>【TVS】サービス仕様書　作成・確認依頼</td><td class='due-tomorrow'>1日後</td></tr></tbody></table>
+  <table class='ticket-table tomorrow-table'><thead><tr><th>担当者</th><th>タスク名</th><th>〆切日</th></tr></thead><tbody><tr><td>谷口</td><td>【KRY】サービス終了依頼(体系整理に伴いWFコンテンツ一部終了)</td><td class='due-tomorrow'>1日後</td></tr><tr><td>谷口</td><td>【KRY】サービス終了依頼(体系整理に伴いL字コンテンツ一部終了)</td><td class='due-tomorrow'>1日後</td></tr><tr><td>谷口</td><td>【TVS】サービス終了依頼：データ放送モノメディアデータ提供（ワンセグ向け））</td><td class='due-tomorrow'>1日後</td></tr><tr><td>俵谷（WNI）</td><td>【UMK】受注エントリー：1segデータ放送終了に伴うトップメニューBML改修（局ロゴ静止画に差し変え）対応</td><td class='due-tomorrow'>1日後</td></tr><tr><td>俵谷（WNI）</td><td>【KBC】データ放送の河川水位情報の継続依頼（EX系列データ放送Ver.upに伴う）</td><td class='due-tomorrow'>1日後</td></tr><tr><td>Mika KAMATA</td><td>【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 新気象・防災サイト 追加改修および防災情報の体系整理対応 ＋プッシュ通知追加分</td><td class='due-tomorrow'>1日後</td></tr></tbody></table>
 </div>
 
 <!-- タブ2: メンバー別タスク -->
@@ -137,20 +137,20 @@
     <button class="filter-btn" onclick="filterMembers('yellow',this)"><span class="filter-dot" style="background:#eab308;"></span>注意</button>
     <button class="filter-btn" onclick="filterMembers('green',this)"><span class="filter-dot" style="background:#22c55e;"></span>順調</button>
   </div>
-  <div class="member-count-text" id="member-count-text">35名を表示中（全35名）</div>
+  <div class="member-count-text" id="member-count-text">34名を表示中（全34名）</div>
   <div id="accordion-list">
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#ef4444;"></span>
             <span class="signal-label" style="color:#ef4444;">緊急</span>
-            <span class="member-name">katsumata</span>
-            <span class="total-count">計8件</span>
-            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内4件</span><span class='count-badge ok-badge'>余裕3件</span>
+            <span class="member-name">koshih</span>
+            <span class="total-count">計2件</span>
+            <span class='count-badge overdue-badge'>期限切れ2件</span>
             <span class="chevron open">▼</span>
           </div>
           <div class="accordion-body" style="display:block;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TNC】サービス仕様書　作成・確認依頼</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【KKB】運営対応依頼：浅川さん休暇のため原稿提供依頼（6/1と6/2）</td><td >8日後</td></tr><tr><td>【UMK】サービス終了エントリー：1seg向けウェザーニューズデータ放送（仕様変更＆金額変化）</td><td style='color:#ef4444;font-weight:bold;'>3日超過</td></tr><tr><td>【KAB】受注エントリー：データ放送BML差し替え対応</td><td >4日後</td></tr><tr><td>【TNC】受注エントリー：CV2佐賀エリア追加に伴うシーン追加（有償分）</td><td >7日後</td></tr><tr><td>【TNC】作業依頼：CV2佐賀エリア追加に伴うシーン追加（サービス内対応=無償）</td><td >9日後</td></tr><tr><td>【KKB】作業依頼：防災気象情報の体系整理対応（アプリ・WEB）</td><td >4日後</td></tr><tr><td>【KBS】受注エントリー：防災情報の体系整理（CV-DB）</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【TNC】サービス仕様書　作成・確認依頼</td><td style='color:#ef4444;font-weight:bold;'>1日超過</td></tr><tr><td>【FMいるか】作業依頼：ONEシート変更依頼</td><td style='color:#ef4444;font-weight:bold;'>8日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -158,13 +158,13 @@
             <span class="signal-dot" style="background:#ef4444;"></span>
             <span class="signal-label" style="color:#ef4444;">緊急</span>
             <span class="member-name">kida-s</span>
-            <span class="total-count">計4件</span>
-            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内2件</span><span class='count-badge ok-badge'>余裕1件</span>
+            <span class="total-count">計3件</span>
+            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge today-badge'>今日1件</span><span class='count-badge soon-badge'>5日以内1件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【HAB】コスト見積もり依頼：緊地・WINCS-WF更新（単独見積）</td><td >2日後</td></tr><tr><td>【HTB】受注エントリー：臨時気象コーディネート業務（2026年5月）</td><td style='color:#ef4444;font-weight:bold;'>6日超過</td></tr><tr><td>【TeNY】受注エントリー：IoT気象データ提供サービス（HP向け延長（5月分））</td><td >4日後</td></tr><tr><td>【まちのラジオ】受注エントリー：Wfb for BC（無償トライアル）</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【HAB】コスト見積もり依頼：緊地・WINCS-WF更新（単独見積）</td><td style='color:#ef4444;font-weight:bold;'>今日</td></tr><tr><td>【HTB】受注エントリー：臨時気象コーディネート業務（2026年5月）</td><td style='color:#ef4444;font-weight:bold;'>8日超過</td></tr><tr><td>【TeNY】受注エントリー：IoT気象データ提供サービス（HP向け延長（5月分））</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -173,12 +173,12 @@
             <span class="signal-label" style="color:#ef4444;">緊急</span>
             <span class="member-name">Shota Koizumi（koiz-s）</span>
             <span class="total-count">計5件</span>
-            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕3件</span>
+            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内2件</span><span class='count-badge ok-badge'>余裕2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【HTB】運営対応可否確認：6月のイチオシサポート（調整済）</td><td style='color:#ef4444;font-weight:bold;'>3日超過</td></tr><tr><td>【HTB】受注エントリー：WF印字/原稿用プリンタ更新対応</td><td >11日後</td></tr><tr><td>【TVI】サービス終了依頼：L字システム向けサービス（テキスト情報のみ）</td><td >4日後</td></tr><tr><td>【AAB】受注エントリー：デジタル記事向けサービス（体系整理後）</td><td >11日後</td></tr><tr><td>【JRTR】作業依頼：ラジオ自動音声コメントシステム設定変更</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【HTB】運営対応可否確認：6月のイチオシサポート（調整済）</td><td style='color:#ef4444;font-weight:bold;'>5日超過</td></tr><tr><td>【HTB】受注エントリー：WF印字/原稿用プリンタ更新対応</td><td >9日後</td></tr><tr><td>【TVI】サービス終了依頼：L字システム向けサービス（テキスト情報のみ）</td><td >2日後</td></tr><tr><td>【AAB】受注エントリー：デジタル記事向けサービス（体系整理後）</td><td >9日後</td></tr><tr><td>【JRTR】作業依頼：ラジオ自動音声コメントシステム設定変更</td><td >4日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -186,13 +186,13 @@
             <span class="signal-dot" style="background:#ef4444;"></span>
             <span class="signal-label" style="color:#ef4444;">緊急</span>
             <span class="member-name">takaic</span>
-            <span class="total-count">計4件</span>
-            <span class='count-badge today-badge'>今日1件</span><span class='count-badge soon-badge'>5日以内3件</span>
+            <span class="total-count">計3件</span>
+            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【RKC】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr><tr><td>【GYT】サービス仕様書　作成・確認依頼</td><td >4日後</td></tr><tr><td>【GYT】受注エントリー：2026年5月以降の延長保守料</td><td style='color:#ef4444;font-weight:bold;'>今日</td></tr><tr><td>【NKT】サービス終了依頼：IT'S NEWS,ISアカウント停止</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【RKC】受注エントリー：Wfb for BC（無償トライアル）</td><td >2日後</td></tr><tr><td>【GYT】受注エントリー：2026年5月以降の延長保守料</td><td style='color:#ef4444;font-weight:bold;'>2日超過</td></tr><tr><td>【NKT】サービス終了依頼：IT'S NEWS,ISアカウント停止</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -200,27 +200,27 @@
             <span class="signal-dot" style="background:#ef4444;"></span>
             <span class="signal-label" style="color:#ef4444;">緊急</span>
             <span class="member-name">yam-ka</span>
-            <span class="total-count">計3件</span>
-            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内2件</span>
+            <span class="total-count">計5件</span>
+            <span class='count-badge overdue-badge'>期限切れ2件</span><span class='count-badge soon-badge'>5日以内3件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【YBC】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr><tr><td>【TVI】運営対応依頼（Duty調整無し）：臨時出演（5/15）※2回目/12回中</td><td style='color:#ef4444;font-weight:bold;'>10日超過</td></tr><tr><td>【YTS】受注エントリー：（トライアル）AI原稿エージェント※2026年5月分</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【GYT】サービス仕様書　作成・確認依頼</td><td >2日後</td></tr><tr><td>【YBC】受注エントリー：Wfb for BC（無償トライアル）</td><td >2日後</td></tr><tr><td>【TVI】運営対応依頼（Duty調整無し）：臨時出演（5/15）※2回目/12回中</td><td style='color:#ef4444;font-weight:bold;'>12日超過</td></tr><tr><td>【YTS】受注エントリー：（トライアル）AI原稿エージェント※2026年5月分</td><td >2日後</td></tr><tr><td>【TVS】サービス仕様書　作成・確認依頼</td><td style='color:#ef4444;font-weight:bold;'>1日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#ef4444;"></span>
             <span class="signal-label" style="color:#ef4444;">緊急</span>
-            <span class="member-name">koshih</span>
-            <span class="total-count">計1件</span>
-            <span class='count-badge overdue-badge'>期限切れ1件</span>
+            <span class="member-name">katsumata</span>
+            <span class="total-count">計7件</span>
+            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内4件</span><span class='count-badge ok-badge'>余裕2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【FMいるか】作業依頼：ONEシート変更依頼</td><td style='color:#ef4444;font-weight:bold;'>6日超過</td></tr></tbody></table>
+            <tbody><tr><td>【KKB】運営対応依頼：浅川さん休暇のため原稿提供依頼（6/1と6/2）</td><td >6日後</td></tr><tr><td>【UMK】サービス終了エントリー：1seg向けウェザーニューズデータ放送（仕様変更＆金額変化）</td><td style='color:#ef4444;font-weight:bold;'>5日超過</td></tr><tr><td>【KAB】受注エントリー：データ放送BML差し替え対応</td><td >2日後</td></tr><tr><td>【TNC】受注エントリー：CV2佐賀エリア追加に伴うシーン追加（有償分）</td><td >5日後</td></tr><tr><td>【TNC】作業依頼：CV2佐賀エリア追加に伴うシーン追加（サービス内対応=無償）</td><td >7日後</td></tr><tr><td>【KKB】作業依頼：防災気象情報の体系整理対応（アプリ・WEB）</td><td >2日後</td></tr><tr><td>【KBS】受注エントリー：防災情報の体系整理（CV-DB）</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -229,26 +229,12 @@
             <span class="signal-label" style="color:#ef4444;">緊急</span>
             <span class="member-name">谷口</span>
             <span class="total-count">計9件</span>
-            <span class='count-badge overdue-badge'>期限切れ2件</span><span class='count-badge today-badge'>今日2件</span><span class='count-badge soon-badge'>5日以内5件</span>
+            <span class='count-badge overdue-badge'>期限切れ5件</span><span class='count-badge soon-badge'>5日以内4件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TNC】運営対応依頼：町田予報士の休暇取得に伴い、代理スタッフ手配に向けたDUTY調整依頼（6/12、6/26）</td><td style='color:#ef4444;font-weight:bold;'>3日超過</td></tr><tr><td>【TVS】専任CS同行依頼：Wfb導入に向けた提案（防災気象情報体系整理に絡めたSCCを含め）</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【NHNM】サービス仕様書　作成・確認依頼（2026年7月以降のTGサービス分）</td><td style='color:#ef4444;font-weight:bold;'>今日</td></tr><tr><td>【CTC】サービス終了依頼：データ放送向けモノメディアデータ提供サービスの警報データの停止依頼</td><td style='color:#ef4444;font-weight:bold;'>3日超過</td></tr><tr><td>【KRY】サービス終了依頼(体系整理に伴いWFコンテンツ一部終了)</td><td >3日後</td></tr><tr><td>【KRY】サービス終了依頼(体系整理に伴いL字コンテンツ一部終了)</td><td >3日後</td></tr><tr><td>【CTC】受注エントリー：防災気象情報の体系整理(SX/タイム横/WF4)</td><td >4日後</td></tr><tr><td>【TVS】サービス終了依頼：データ放送モノメディアデータ提供（ワンセグ向け））</td><td >3日後</td></tr><tr><td>【NTV】データ配信停止作業依頼：NTV日本テレビ放送網 NNN系列データ放送向け 警報注意報（JMA注警報(nns-warn.csv）配信停止作業</td><td style='color:#ef4444;font-weight:bold;'>今日</td></tr></tbody></table>
-          </div>
-        </div>
-        <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="signal-dot" style="background:#ef4444;"></span>
-            <span class="signal-label" style="color:#ef4444;">緊急</span>
-            <span class="member-name">俵谷（WNI）</span>
-            <span class="total-count">計3件</span>
-            <span class='count-badge overdue-badge'>期限切れ1件</span><span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕1件</span>
-            <span class="chevron">▼</span>
-          </div>
-          <div class="accordion-body" style="display:none;">
-            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【UMK】受注エントリー：1segデータ放送終了に伴うトップメニューBML改修（局ロゴ静止画に差し変え）対応</td><td >3日後</td></tr><tr><td>【KBC】データ放送の河川水位情報の継続依頼（EX系列データ放送Ver.upに伴う）</td><td style='color:#ef4444;font-weight:bold;'>10日超過</td></tr><tr><td>【データ放送】作業依頼：ANN系列（新コンテンツ）における夜晴れマーク対応</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【TNC】運営対応依頼：町田予報士の休暇取得に伴い、代理スタッフ手配に向けたDUTY調整依頼（6/12、6/26）</td><td style='color:#ef4444;font-weight:bold;'>5日超過</td></tr><tr><td>【TVS】専任CS同行依頼：Wfb導入に向けた提案（防災気象情報体系整理に絡めたSCCを含め）</td><td style='color:#ef4444;font-weight:bold;'>1日超過</td></tr><tr><td>【NHNM】サービス仕様書　作成・確認依頼（2026年7月以降のTGサービス分）</td><td style='color:#ef4444;font-weight:bold;'>2日超過</td></tr><tr><td>【CTC】サービス終了依頼：データ放送向けモノメディアデータ提供サービスの警報データの停止依頼</td><td style='color:#ef4444;font-weight:bold;'>5日超過</td></tr><tr><td>【KRY】サービス終了依頼(体系整理に伴いWFコンテンツ一部終了)</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【KRY】サービス終了依頼(体系整理に伴いL字コンテンツ一部終了)</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【CTC】受注エントリー：防災気象情報の体系整理(SX/タイム横/WF4)</td><td >2日後</td></tr><tr><td>【TVS】サービス終了依頼：データ放送モノメディアデータ提供（ワンセグ向け））</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【NTV】データ配信停止作業依頼：NTV日本テレビ放送網 NNN系列データ放送向け 警報注意報（JMA注警報(nns-warn.csv）配信停止作業</td><td style='color:#ef4444;font-weight:bold;'>2日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -262,7 +248,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【WOW】作業依頼：防災気象情報の体系整理に伴うWF4設定変更依頼</td><td >4日後</td></tr><tr><td>【KTK】サービス終了依頼：アプリ向け気象データ提供サービス</td><td style='color:#ef4444;font-weight:bold;'>10日超過</td></tr></tbody></table>
+            <tbody><tr><td>【WOW】作業依頼：防災気象情報の体系整理に伴うWF4設定変更依頼</td><td >2日後</td></tr><tr><td>【KTK】サービス終了依頼：アプリ向け気象データ提供サービス</td><td style='color:#ef4444;font-weight:bold;'>12日超過</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
@@ -276,35 +262,49 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【SATV】臨時原稿依頼：渡部予報士休暇に伴う臨時原稿依頼</td><td style='color:#ef4444;font-weight:bold;'>9日超過</td></tr><tr><td>【NTV】受注エントリー：NTV日本テレビ放送網 EV-SX終了対応（現地のWNI資産機器の持ち帰りとNTV資産機器提出）</td><td style='color:#ef4444;font-weight:bold;'>5日超過</td></tr><tr><td>【ABN】サービス休止依頼：4月以降のソラをライブの一時休止</td><td >11日後</td></tr><tr><td>【NTV】サービス終了エントリー：NTV日本テレビ放送網 EV-SX終了対応</td><td style='color:#ef4444;font-weight:bold;'>3日超過</td></tr><tr><td>【事前検討会】ASHI：朝日新聞社 MISERUサービス 雨雲レーダー ページ改修対応事前検討会</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【SATV】臨時原稿依頼：渡部予報士休暇に伴う臨時原稿依頼</td><td style='color:#ef4444;font-weight:bold;'>11日超過</td></tr><tr><td>【NTV】受注エントリー：NTV日本テレビ放送網 EV-SX終了対応（現地のWNI資産機器の持ち帰りとNTV資産機器提出）</td><td style='color:#ef4444;font-weight:bold;'>7日超過</td></tr><tr><td>【ABN】サービス休止依頼：4月以降のソラをライブの一時休止</td><td >9日後</td></tr><tr><td>【NTV】サービス終了エントリー：NTV日本テレビ放送網 EV-SX終了対応</td><td style='color:#ef4444;font-weight:bold;'>5日超過</td></tr><tr><td>【事前検討会】ASHI：朝日新聞社 MISERUサービス 雨雲レーダー ページ改修対応事前検討会</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
-        <div class="accordion-card" data-signal="yellow" style="border-left:4px solid #eab308;">
+        <div class="accordion-card" data-signal="red" style="border-left:4px solid #ef4444;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="signal-dot" style="background:#eab308;"></span>
-            <span class="signal-label" style="color:#eab308;">注意</span>
-            <span class="member-name">ikedam</span>
-            <span class="total-count">計4件</span>
-            <span class='count-badge soon-badge'>5日以内3件</span><span class='count-badge ok-badge'>余裕1件</span>
+            <span class="signal-dot" style="background:#ef4444;"></span>
+            <span class="signal-label" style="color:#ef4444;">緊急</span>
+            <span class="member-name">yogawa</span>
+            <span class="total-count">計3件</span>
+            <span class='count-badge today-badge'>今日1件</span><span class='count-badge soon-badge'>5日以内2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【RNB】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr><tr><td>【yab】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr><tr><td>【KYT】受注エントリー：受注エントリー：Wfb for BC（無償トライアル）</td><td >11日後</td></tr><tr><td>【KTS】サービス終了：ポケベルRC（26年5月末）</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【NHNN】作業依頼：NHNN日本放送協会 NMAPSデータナビゲーター　JSONデータの並び順（キーの順序）の改善</td><td >2日後</td></tr><tr><td>【SDT】受注エントリー：SDT 静岡第一テレビ 防災気象情報の体系整理対応（IoT_APIへの移行対応（全部）</td><td style='color:#ef4444;font-weight:bold;'>今日</td></tr><tr><td>【NHOS】作業依頼：NHK国際多言語地震津波・テーブルメンテ（欠測・第一波識別不能、ほか）</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="yellow" style="border-left:4px solid #eab308;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#eab308;"></span>
             <span class="signal-label" style="color:#eab308;">注意</span>
-            <span class="member-name">aramaki</span>
+            <span class="member-name">sasaer</span>
             <span class="total-count">計3件</span>
             <span class='count-badge soon-badge'>5日以内3件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【AMKB】受注エントリー：シロアリ予報原稿（2026年5月分）</td><td >4日後</td></tr><tr><td>【KUFM】受注エントリー：防災気象情報の体系整理</td><td >4日後</td></tr><tr><td>【GVFM】受注エントリー：防災気象情報の体系整理</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【TVK】サービス終了依頼：ワンセグ向けデータ放送サービスのサービス終了依頼</td><td >5日後</td></tr><tr><td>【ABEMA】受注エントリー：放送気象サービス</td><td >4日後</td></tr><tr><td>【TVK】受注エントリー：防災気象情報の体系整理</td><td >2日後</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="accordion-card" data-signal="yellow" style="border-left:4px solid #eab308;">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="signal-dot" style="background:#eab308;"></span>
+            <span class="signal-label" style="color:#eab308;">注意</span>
+            <span class="member-name">俵谷（WNI）</span>
+            <span class="total-count">計3件</span>
+            <span class='count-badge soon-badge'>5日以内3件</span>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="accordion-body" style="display:none;">
+            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
+            <tbody><tr><td>【UMK】受注エントリー：1segデータ放送終了に伴うトップメニューBML改修（局ロゴ静止画に差し変え）対応</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【KBC】データ放送の河川水位情報の継続依頼（EX系列データ放送Ver.upに伴う）</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr><tr><td>【データ放送】作業依頼：ANN系列（新コンテンツ）における夜晴れマーク対応</td><td >4日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="yellow" style="border-left:4px solid #eab308;">
@@ -318,35 +318,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【RKC】サービス終了依頼：アプリ向けIoT気象データ提供サービスの警報部分のみ終了依頼</td><td >4日後</td></tr><tr><td>【YTS】受注エントリー：防災気象情報の体系整理</td><td >4日後</td></tr><tr><td>【TVA】受注エントリー：防災気象情報の体系整理</td><td >4日後</td></tr></tbody></table>
-          </div>
-        </div>
-        <div class="accordion-card" data-signal="yellow" style="border-left:4px solid #eab308;">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="signal-dot" style="background:#eab308;"></span>
-            <span class="signal-label" style="color:#eab308;">注意</span>
-            <span class="member-name">yogawa</span>
-            <span class="total-count">計3件</span>
-            <span class='count-badge soon-badge'>5日以内3件</span>
-            <span class="chevron">▼</span>
-          </div>
-          <div class="accordion-body" style="display:none;">
-            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【NHNN】作業依頼：NHNN日本放送協会 NMAPSデータナビゲーター　JSONデータの並び順（キーの順序）の改善</td><td >4日後</td></tr><tr><td>【SDT】受注エントリー：SDT 静岡第一テレビ 防災気象情報の体系整理対応（IoT_APIへの移行対応（全部）</td><td >2日後</td></tr><tr><td>【NHOS】作業依頼：NHK国際多言語地震津波・テーブルメンテ（欠測・第一波識別不能、ほか）</td><td >4日後</td></tr></tbody></table>
-          </div>
-        </div>
-        <div class="accordion-card" data-signal="yellow" style="border-left:4px solid #eab308;">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="signal-dot" style="background:#eab308;"></span>
-            <span class="signal-label" style="color:#eab308;">注意</span>
-            <span class="member-name">田口（taguchan）</span>
-            <span class="total-count">計5件</span>
-            <span class='count-badge soon-badge'>5日以内5件</span>
-            <span class="chevron">▼</span>
-          </div>
-          <div class="accordion-body" style="display:none;">
-            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【SDT】受注エントリー：SDT 静岡第一テレビ 防災気象情報の体系整理対応（WINCSおよびL字/文字CMS）		</td><td >4日後</td></tr><tr><td>【SDT】コスト算出依頼：防災気象情報の体系整理対応に関するコスト算出依頼 （WIINCS-TV（タイム横あり）/WINCS-WF/L字/文字CMS）</td><td >2日後</td></tr><tr><td>【NHDH】受注エントリー（2026年8月31日まで分）：NHDH日本放送協会 デジタルセンター データ放送での防災気象情報新名称表示対応</td><td >4日後</td></tr><tr><td>【SDT】コスト算出依頼：SDT静岡第一テレビ IoT_API提供に向けた事前確認会およびコスト算出依頼</td><td >2日後</td></tr><tr><td>【NHOS】受注前事前Kickoff開催依頼：NHOS日本放送協会 国際放送局 ワールドプレミアム向けWINCS導入 受注前事前Kickoff開催参加依頼</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【RKC】サービス終了依頼：アプリ向けIoT気象データ提供サービスの警報部分のみ終了依頼</td><td >2日後</td></tr><tr><td>【YTS】受注エントリー：防災気象情報の体系整理</td><td >2日後</td></tr><tr><td>【TVA】受注エントリー：防災気象情報の体系整理</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -360,7 +332,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【WTV】受注エントリー：臨時入り中サービス（電話）の受注エントリー（事後）</td><td >4日後</td></tr><tr><td>【FTB】作業依頼：タイム横天気の切り替え時間変更</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【WTV】受注エントリー：臨時入り中サービス（電話）の受注エントリー（事後）</td><td >2日後</td></tr><tr><td>【FTB】作業依頼：タイム横天気の切り替え時間変更</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -374,7 +346,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TVO】受注エントリー：Wfb for BC　特別無償トライアル（申込：googleフォーム案件）</td><td >4日後</td></tr><tr><td>【EBC】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【TVO】受注エントリー：Wfb for BC　特別無償トライアル（申込：googleフォーム案件）</td><td >2日後</td></tr><tr><td>【EBC】受注エントリー：Wfb for BC（無償トライアル）</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -383,12 +355,12 @@
             <span class="signal-label" style="color:#22c55e;">順調</span>
             <span class="member-name">itoi</span>
             <span class="total-count">計2件</span>
-            <span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕1件</span>
+            <span class='count-badge soon-badge'>5日以内2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【ITV】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr><tr><td>【TeNY】サービス終了依頼：HP向けIoT気象データ提供サービスの終了依頼</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【ITV】受注エントリー：Wfb for BC（無償トライアル）</td><td >2日後</td></tr><tr><td>【TeNY】サービス終了依頼：HP向けIoT気象データ提供サービスの終了依頼</td><td >4日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -402,21 +374,21 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【XSNIN山陰ケーブルビジョン】サービス終了依頼：モノメディアデータ提供サービス注警報配信停止</td><td >4日後</td></tr><tr><td>【XTKOケーブルワン】サービス終了エントリー：データ放送向けモノメディアデータ提供サービスの終了</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【XSNIN山陰ケーブルビジョン】サービス終了依頼：モノメディアデータ提供サービス注警報配信停止</td><td >2日後</td></tr><tr><td>【XTKOケーブルワン】サービス終了エントリー：データ放送向けモノメディアデータ提供サービスの終了</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#22c55e;"></span>
             <span class="signal-label" style="color:#22c55e;">順調</span>
-            <span class="member-name">sasaer</span>
-            <span class="total-count">計3件</span>
-            <span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕2件</span>
+            <span class="member-name">ikedam</span>
+            <span class="total-count">計2件</span>
+            <span class='count-badge ok-badge'>余裕2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TVK】サービス終了依頼：ワンセグ向けデータ放送サービスのサービス終了依頼</td><td >7日後</td></tr><tr><td>【ABEMA】受注エントリー：放送気象サービス</td><td >6日後</td></tr><tr><td>【TVK】受注エントリー：防災気象情報の体系整理</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【KYT】受注エントリー：受注エントリー：Wfb for BC（無償トライアル）</td><td >9日後</td></tr><tr><td>【KTS】サービス終了：ポケベルRC（26年5月末）</td><td >9日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -430,7 +402,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【OAB】コスト見積依頼：緊急地震速報＆L字の更新（本見積3回目）</td><td >11日後</td></tr><tr><td>【FBC】コスト見積もり依頼：IoT気象データ提供サービス 津波情報 配信エリア変更対応</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【OAB】コスト見積依頼：緊急地震速報＆L字の更新（本見積3回目）</td><td >9日後</td></tr><tr><td>【FBC】コスト見積もり依頼：IoT気象データ提供サービス 津波情報 配信エリア変更対応</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -438,27 +410,27 @@
             <span class="signal-dot" style="background:#22c55e;"></span>
             <span class="signal-label" style="color:#22c55e;">順調</span>
             <span class="member-name">ぼちゃん</span>
-            <span class="total-count">計2件</span>
-            <span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕1件</span>
+            <span class="total-count">計1件</span>
+            <span class='count-badge soon-badge'>5日以内1件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【THK】サービス終了依頼：特別原稿（スイッチ向け原稿）</td><td >4日後</td></tr><tr><td>【KSS】作業依頼：防災気象情報の体系整理に伴う改修</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【THK】サービス終了依頼：特別原稿（スイッチ向け原稿）</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#22c55e;"></span>
             <span class="signal-label" style="color:#22c55e;">順調</span>
-            <span class="member-name">stoshi</span>
-            <span class="total-count">計2件</span>
-            <span class='count-badge soon-badge'>5日以内2件</span>
+            <span class="member-name">moriguchi</span>
+            <span class="total-count">計3件</span>
+            <span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【KBCHD】受注エントリー：2026年度Nサブ更新に向けたWNI作業</td><td >4日後</td></tr><tr><td>【KBCHD】受注エントリー：dボタン広報誌 MP移管に伴うWNI作業費/技術継承</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【TAM】コスト見積もり依頼：データ放送自治体情報改修費用（AAB・KFB・khb）</td><td >14日後</td></tr><tr><td>【EX】受注エントリー：基本データ放送改修対応（防災気象情報の体系整理対応＋非連動TOPリニューアル対応）</td><td >5日後</td></tr><tr><td>【EX】作業依頼：テレビ朝日局システム更新に伴う一時的データ配信IP追加対応</td><td >6日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -472,7 +444,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【STS】コスト見積もり依頼：WINCSのCG追加</td><td >4日後</td></tr><tr><td>【KFB】運営対応依頼：データ放送FTPサーバ更新</td><td >11日後</td></tr><tr><td>【KFB】コスト算出依頼：2027年度更新案件（WINCS全面の場合）</td><td >11日後</td></tr><tr><td>【KFB】サービス終了依頼：アプリ向け気象データ提供サービス</td><td >11日後</td></tr><tr><td>【QAB】作業依頼：防災気象情報の体系整理に伴う改修</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【STS】コスト見積もり依頼：WINCSのCG追加</td><td >2日後</td></tr><tr><td>【KFB】運営対応依頼：データ放送FTPサーバ更新</td><td >9日後</td></tr><tr><td>【KFB】コスト算出依頼：2027年度更新案件（WINCS全面の場合）</td><td >9日後</td></tr><tr><td>【KFB】サービス終了依頼：アプリ向け気象データ提供サービス</td><td >9日後</td></tr><tr><td>【QAB】作業依頼：防災気象情報の体系整理に伴う改修</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -481,12 +453,12 @@
             <span class="signal-label" style="color:#22c55e;">順調</span>
             <span class="member-name">Nakanishi Mikako (na-mik)</span>
             <span class="total-count">計2件</span>
-            <span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕1件</span>
+            <span class='count-badge soon-badge'>5日以内2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TKU】サービス終了依頼：アプリ向けIoT気象データ提供サービスの警報部分のみ終了依頼</td><td >4日後</td></tr><tr><td>【TVQ】受注エントリー：緊急地震速報＆L字更新（26年6月）</td><td >7日後</td></tr></tbody></table>
+            <tbody><tr><td>【TKU】サービス終了依頼：アプリ向けIoT気象データ提供サービスの警報部分のみ終了依頼</td><td >2日後</td></tr><tr><td>【TVQ】受注エントリー：緊急地震速報＆L字更新（26年6月）</td><td >5日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -500,7 +472,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【FTV】コスト算出依頼：EV-SPの交換費用</td><td >4日後</td></tr><tr><td>【FTV】コスト算出依頼：EV-SX週間予報シーン改修（表示地点を固定にする）</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【FTV】コスト算出依頼：EV-SPの交換費用</td><td >2日後</td></tr><tr><td>【FTV】コスト算出依頼：EV-SX週間予報シーン改修（表示地点を固定にする）</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -514,7 +486,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 新気象・防災サイト 追加改修および防災情報の体系整理対応 ＋プッシュ通知追加分</td><td >3日後</td></tr></tbody></table>
+            <tbody><tr><td>【NHNM】受注エントリー：NHNM日本放送協会 ニュースメディア部 新気象・防災サイト 追加改修および防災情報の体系整理対応 ＋プッシュ通知追加分</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -523,12 +495,12 @@
             <span class="signal-label" style="color:#22c55e;">順調</span>
             <span class="member-name">hitoki</span>
             <span class="total-count">計1件</span>
-            <span class='count-badge ok-badge'>余裕1件</span>
+            <span class='count-badge soon-badge'>5日以内1件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【NKT】受注エントリー：Wfb for BC（無償トライアル）</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【NKT】受注エントリー：Wfb for BC（無償トライアル）</td><td >4日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -542,21 +514,7 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【KFB】コスト算出依頼：2029年度更新案件（天気、天気SP、EV-SA）</td><td >11日後</td></tr><tr><td>【KFB】コスト算出依頼：2027年度更新案件（WF、L字）</td><td >11日後</td></tr></tbody></table>
-          </div>
-        </div>
-        <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span class="signal-dot" style="background:#22c55e;"></span>
-            <span class="signal-label" style="color:#22c55e;">順調</span>
-            <span class="member-name">okuda</span>
-            <span class="total-count">計1件</span>
-            <span class='count-badge soon-badge'>5日以内1件</span>
-            <span class="chevron">▼</span>
-          </div>
-          <div class="accordion-body" style="display:none;">
-            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TVS】サービス仕様書　作成・確認依頼</td><td style='color:#f97316;font-weight:bold;'>明日</td></tr></tbody></table>
+            <tbody><tr><td>【KFB】コスト算出依頼：2029年度更新案件（天気、天気SP、EV-SA）</td><td >9日後</td></tr><tr><td>【KFB】コスト算出依頼：2027年度更新案件（WF、L字）</td><td >9日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -570,21 +528,21 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【PANAT】サービス開始前確認会：HEMS/インターフォン向け IoT-API（都道府県版）追加および警報XML配信終了（天気XMLは継続）のサービス開始前確認会</td><td >11日後</td></tr><tr><td>【MAPIO】一部サービス終了エントリー：株式会社ONE COMPATH 一部サービス終了エントリー</td><td >14日後</td></tr></tbody></table>
+            <tbody><tr><td>【PANAT】サービス開始前確認会：HEMS/インターフォン向け IoT-API（都道府県版）追加および警報XML配信終了（天気XMLは継続）のサービス開始前確認会</td><td >9日後</td></tr><tr><td>【MAPIO】一部サービス終了エントリー：株式会社ONE COMPATH 一部サービス終了エントリー</td><td >12日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#22c55e;"></span>
             <span class="signal-label" style="color:#22c55e;">順調</span>
-            <span class="member-name">moriguchi</span>
+            <span class="member-name">田口（taguchan）</span>
             <span class="total-count">計2件</span>
-            <span class='count-badge ok-badge'>余裕2件</span>
+            <span class='count-badge soon-badge'>5日以内2件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【EX】受注エントリー：基本データ放送改修対応（防災気象情報の体系整理対応＋非連動TOPリニューアル対応）</td><td >7日後</td></tr><tr><td>【EX】作業依頼：テレビ朝日局システム更新に伴う一時的データ配信IP追加対応</td><td >8日後</td></tr></tbody></table>
+            <tbody><tr><td>【SDT】受注エントリー：SDT 静岡第一テレビ 防災気象情報の体系整理対応（WINCSおよびL字/文字CMS）		</td><td >2日後</td></tr><tr><td>【NHDH】受注エントリー（2026年8月31日まで分）：NHDH日本放送協会 デジタルセンター データ放送での防災気象情報新名称表示対応</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -598,21 +556,35 @@
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【TVI】作業依頼：防災気象情報の体系整理対応（WINCS-TV、EV-SP、L字、WEB/アプリ）</td><td >4日後</td></tr></tbody></table>
+            <tbody><tr><td>【TVI】作業依頼：防災気象情報の体系整理対応（WINCS-TV、EV-SP、L字、WEB/アプリ）</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
           <div class="accordion-header" onclick="toggleAccordion(this)">
             <span class="signal-dot" style="background:#22c55e;"></span>
             <span class="signal-label" style="color:#22c55e;">順調</span>
-            <span class="member-name">Miyuki Hirose</span>
-            <span class="total-count">計2件</span>
-            <span class='count-badge soon-badge'>5日以内1件</span><span class='count-badge ok-badge'>余裕1件</span>
+            <span class="member-name">takach</span>
+            <span class="total-count">計1件</span>
+            <span class='count-badge ok-badge'>余裕1件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【AKT】受注エントリー：防災気象情報の体系整理案件</td><td >4日後</td></tr><tr><td>【MX・HOME】津波肩スーパー標準デザイン改善</td><td >11日後</td></tr></tbody></table>
+            <tbody><tr><td>【IAT】受注エントリー：防災気象情報の体系整理</td><td >14日後</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="signal-dot" style="background:#22c55e;"></span>
+            <span class="signal-label" style="color:#22c55e;">順調</span>
+            <span class="member-name">aramaki</span>
+            <span class="total-count">計2件</span>
+            <span class='count-badge soon-badge'>5日以内2件</span>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="accordion-body" style="display:none;">
+            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
+            <tbody><tr><td>【KUFM】受注エントリー：防災気象情報の体系整理</td><td >2日後</td></tr><tr><td>【GVFM】受注エントリー：防災気象情報の体系整理</td><td >2日後</td></tr></tbody></table>
           </div>
         </div>
         <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
@@ -621,12 +593,26 @@
             <span class="signal-label" style="color:#22c55e;">順調</span>
             <span class="member-name">AKANUMA Yosuke</span>
             <span class="total-count">計1件</span>
+            <span class='count-badge soon-badge'>5日以内1件</span>
+            <span class="chevron">▼</span>
+          </div>
+          <div class="accordion-body" style="display:none;">
+            <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
+            <tbody><tr><td>【なし】要望目的：WF4のログ取得</td><td >4日後</td></tr></tbody></table>
+          </div>
+        </div>
+        <div class="accordion-card" data-signal="green" style="border-left:4px solid #22c55e;">
+          <div class="accordion-header" onclick="toggleAccordion(this)">
+            <span class="signal-dot" style="background:#22c55e;"></span>
+            <span class="signal-label" style="color:#22c55e;">順調</span>
+            <span class="member-name">Miyuki Hirose</span>
+            <span class="total-count">計1件</span>
             <span class='count-badge ok-badge'>余裕1件</span>
             <span class="chevron">▼</span>
           </div>
           <div class="accordion-body" style="display:none;">
             <table class="ticket-table inner-table"><thead><tr><th>チケット名</th><th>〆切</th></tr></thead>
-            <tbody><tr><td>【なし】要望目的：WF4のログ取得</td><td >6日後</td></tr></tbody></table>
+            <tbody><tr><td>【MX・HOME】津波肩スーパー標準デザイン改善</td><td >9日後</td></tr></tbody></table>
           </div>
         </div></div>
 </div>
@@ -642,7 +628,7 @@
   </div>
 </div>
 
-<div class="page-footer">※ データはBacklog「BRAND_ENTRY」プロジェクトから取得（2026/05/25（月）時点）。</div>
+<div class="page-footer">※ データはBacklog「BRAND_ENTRY」プロジェクトから取得（2026/05/27（水）時点）。</div>
 
 <script>
   function switchTab(tabId, btn) {
@@ -677,12 +663,12 @@
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ["谷口", "katsumata", "Shota Koizumi（koiz-s）", "koba-t", "田口（taguchan）", "ozawa", "kida-s", "takaic", "ikedam", "yam-ka", "俵谷（WNI）", "aramaki", "koyama", "yogawa", "sasaer", "amayu", "hattori", "yama-k", "itoi", "kitazy", "ukai", "ぼちゃん", "stoshi", "Nakanishi Mikako (na-mik)", "荒井美穂（arai-m）", "kane-h", "kasakou", "moriguchi", "Miyuki Hirose", "koshih", "Mika KAMATA", "hitoki", "okuda", "anaz-k", "AKANUMA Yosuke"],
+      labels: ["谷口", "katsumata", "Shota Koizumi（koiz-s）", "yam-ka", "koba-t", "ozawa", "kida-s", "takaic", "yogawa", "sasaer", "俵谷（WNI）", "koyama", "moriguchi", "koshih", "amayu", "hattori", "yama-k", "itoi", "kitazy", "ikedam", "ukai", "Nakanishi Mikako (na-mik)", "荒井美穂（arai-m）", "kane-h", "kasakou", "田口（taguchan）", "aramaki", "ぼちゃん", "Mika KAMATA", "hitoki", "anaz-k", "takach", "AKANUMA Yosuke", "Miyuki Hirose"],
       datasets: [
-        { label: '期限切れ', data: [2, 1, 1, 3, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], backgroundColor: '#dc2626' },
-        { label: '今日〆切', data: [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   backgroundColor: '#f97316' },
-        { label: '5日以内',  data: [5, 4, 1, 1, 5, 2, 2, 3, 3, 2, 1, 3, 3, 3, 1, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0],    backgroundColor: '#ca8a04' },
-        { label: '6日以上',  data: [0, 3, 3, 1, 0, 3, 1, 0, 1, 0, 1, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 2, 2, 2, 1, 0, 0, 1, 0, 0, 1],      backgroundColor: '#16a34a' },
+        { label: '期限切れ', data: [5, 1, 1, 2, 3, 0, 1, 1, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], backgroundColor: '#dc2626' },
+        { label: '今日〆切', data: [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   backgroundColor: '#f97316' },
+        { label: '5日以内',  data: [4, 4, 2, 3, 1, 2, 1, 2, 2, 3, 3, 3, 1, 0, 1, 2, 2, 2, 2, 0, 1, 2, 2, 0, 0, 2, 2, 1, 1, 1, 1, 0, 1, 0],    backgroundColor: '#ca8a04' },
+        { label: '6日以上',  data: [0, 2, 2, 0, 1, 3, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 1, 0, 1],      backgroundColor: '#16a34a' },
       ],
     },
     options: {
